@@ -1,19 +1,38 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { cartService } from '../../services/cartService';
 
 export default function Navbar() {
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  const fetchCart = useCallback(() => {
+    if (isAuthenticated) {
+      cartService.getCart().then((res) => {
+        setCartCount(res.data.totalItems || 0);
+      }).catch(() => setCartCount(0));
+    } else {
+      setCartCount(0);
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => { fetchCart(); }, [fetchCart]);
+
+  useEffect(() => {
+    window.addEventListener('cart-updated', fetchCart);
+    return () => window.removeEventListener('cart-updated', fetchCart);
+  }, [fetchCart]);
 
   const handleLogout = () => {
     logout();
@@ -43,7 +62,7 @@ export default function Navbar() {
 
             {isAuthenticated ? (
               <>
-                <NavLink to="/cart" label="Cart" />
+                <NavLink to="/cart" label="Cart" count={cartCount} />
                 <NavLink to="/wishlist" label="Wishlist" />
                 <NavLink to="/orders" label="Orders" />
                 <NavLink to="/profile" label="Profile" />
@@ -83,7 +102,7 @@ export default function Navbar() {
           </div>
 
           <button
-            className="md:hidden text-gray-700"
+            className="md:hidden text-gray-700 relative"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,7 +128,7 @@ export default function Navbar() {
               {isAuthenticated ? (
                 <>
                   <MobileLink to="/products" label="Products" onClick={() => setMobileOpen(false)} />
-                  <MobileLink to="/cart" label="Cart" onClick={() => setMobileOpen(false)} />
+                  <MobileLink to="/cart" label={`Cart${cartCount > 0 ? ` (${cartCount})` : ''}`} onClick={() => setMobileOpen(false)} />
                   <MobileLink to="/wishlist" label="Wishlist" onClick={() => setMobileOpen(false)} />
                   <MobileLink to="/orders" label="Orders" onClick={() => setMobileOpen(false)} />
                   <MobileLink to="/profile" label="Profile" onClick={() => setMobileOpen(false)} />
@@ -132,12 +151,27 @@ export default function Navbar() {
   );
 }
 
-function NavLink({ to, label }: { to: string; label: string }) {
+function NavLink({ to, label, count }: { to: string; label: string; count?: number }) {
+  const isCart = label === 'Cart';
   return (
-    <motion.div whileHover={{ y: -1 }} whileTap={{ y: 0 }}>
-      <Link to={to} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">
+    <motion.div whileHover={{ y: -1 }} whileTap={{ y: 0 }} className="relative">
+      <Link to={to} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors flex items-center gap-1">
+        {isCart ? (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+          </svg>
+        ) : null}
         {label}
       </Link>
+      {count !== undefined && count > 0 && isCart && (
+        <motion.span
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="absolute -top-2 -right-4 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-md"
+        >
+          {count > 99 ? '99+' : count}
+        </motion.span>
+      )}
     </motion.div>
   );
 }

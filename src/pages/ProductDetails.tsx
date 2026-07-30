@@ -38,7 +38,6 @@ export default function ProductDetails() {
     setAddingToCart(true);
     try {
       await cartService.addItem(product!.id, quantity);
-      alert('Added to cart!');
     } finally {
       setAddingToCart(false);
     }

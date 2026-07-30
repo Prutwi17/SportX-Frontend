@@ -1,5 +1,8 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { productService } from '../services/productService';
+import type { Product, PagedResponse } from '../types';
 
 const stagger = {
   hidden: {},
@@ -17,6 +20,12 @@ const scaleIn = {
 };
 
 export default function Home() {
+  const [featured, setFeatured] = useState<PagedResponse<Product> | null>(null);
+
+  useEffect(() => {
+    productService.getAll(0, 8).then((res) => setFeatured(res.data));
+  }, []);
+
   return (
     <div>
       <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white">
@@ -78,6 +87,75 @@ export default function Home() {
         </div>
       </section>
 
+      {featured && featured.content.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 py-20">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={stagger}
+          >
+            <motion.h2 variants={fadeUp} className="text-4xl font-bold text-center mb-4">
+              Featured Products
+            </motion.h2>
+            <motion.p variants={fadeUp} className="text-gray-500 text-center mb-12 max-w-md mx-auto">
+              Our top picks for you
+            </motion.p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {featured.content.map((product, i) => (
+                <motion.div key={product.id} variants={scaleIn} custom={i}>
+                  <Link
+                    to={`/products/${product.id}`}
+                    className="card-hover block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl"
+                  >
+                    <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden">
+                      {product.primaryImage ? (
+                        <motion.img
+                          whileHover={{ scale: 1.1 }}
+                          transition={{ duration: 0.4 }}
+                          src={product.primaryImage}
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-gray-400 text-4xl">🏷️</span>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-bold text-base mb-1 line-clamp-1">{product.name}</h3>
+                      <p className="text-sm text-gray-500 mb-2">{product.categoryName}</p>
+                      <div className="flex items-center justify-between">
+                        {product.discountedPrice ? (
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg font-bold text-indigo-600">₹{product.discountedPrice}</span>
+                            <span className="text-sm text-gray-400 line-through">₹{product.price}</span>
+                          </div>
+                        ) : (
+                          <span className="text-lg font-bold">₹{product.price}</span>
+                        )}
+                        {product.averageRating > 0 && (
+                          <span className="text-sm bg-yellow-50 text-yellow-700 px-2 py-1 rounded-lg font-medium">
+                            ★ {product.averageRating.toFixed(1)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+            <motion.div variants={fadeUp} className="text-center mt-10">
+              <Link
+                to="/products"
+                className="inline-block text-indigo-600 font-semibold hover:text-indigo-700 transition-colors"
+              >
+                View All Products →
+              </Link>
+            </motion.div>
+          </motion.div>
+        </section>
+      )}
+
       <section className="max-w-7xl mx-auto px-4 py-20">
         <motion.div
           initial="hidden"
@@ -102,7 +180,7 @@ export default function Home() {
             ].map((cat, i) => (
               <motion.div key={cat.name} variants={scaleIn} custom={i}>
                 <Link
-                  to={`/products?category=${cat.name}`}
+                  to={`/products?q=${cat.name}`}
                   className="card-hover block bg-white rounded-2xl p-8 text-center border border-gray-100 shadow-sm hover:shadow-xl"
                 >
                   <motion.div

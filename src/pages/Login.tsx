@@ -24,8 +24,9 @@ export default function Login() {
         lastName: res.data.lastName,
       });
       navigate('/');
-    } catch {
-      setError('Invalid email or password');
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Invalid email or password';
+      setError(msg);
     } finally {
       setLoading(false);
     }

@@ -108,7 +108,9 @@ export default function ManageProducts() {
             <div><label className="block text-sm font-medium">Category</label><select value={form.categoryId} onChange={(e) => setForm((p) => ({ ...p, categoryId: e.target.value }))} className="w-full border rounded px-3 py-2 mt-1" required><option value="">Select</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
             <div><label className="block text-sm font-medium">Brand</label><select value={form.brandId} onChange={(e) => setForm((p) => ({ ...p, brandId: e.target.value }))} className="w-full border rounded px-3 py-2 mt-1" required><option value="">Select</option>{brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}</select></div>
             <div className="md:col-span-2"><label className="block text-sm font-medium">Description</label><textarea value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} className="w-full border rounded px-3 py-2 mt-1" rows={3} /></div>
-            <div className="md:col-span-2"><label className="block text-sm font-medium">Image URLs (comma-separated)</label><input value={form.imageUrls} onChange={(e) => setForm((p) => ({ ...p, imageUrls: e.target.value }))} className="w-full border rounded px-3 py-2 mt-1" placeholder="https://..." /></div>
+            <div className="md:col-span-2"><label className="block text-sm font-medium">Image URLs (comma-separated)</label><input value={form.imageUrls} onChange={(e) => setForm((p) => ({ ...p, imageUrls: e.target.value }))} className="w-full border rounded px-3 py-2 mt-1" placeholder="https://images.unsplash.com/photo-..." />
+              {form.imageUrls && <img src={form.imageUrls.split(',')[0].trim()} alt="preview" className="h-24 mt-2 rounded object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />}
+            </div>
           </div>
           <button type="submit" className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 mt-4">
             {editingId ? 'Update' : 'Create'}
@@ -121,6 +123,7 @@ export default function ManageProducts() {
           <table className="w-full text-left">
             <thead className="bg-gray-50">
               <tr>
+                <th className="py-3 px-4">Image</th>
                 <th className="py-3 px-4">Name</th>
                 <th className="py-3 px-4">Price</th>
                 <th className="py-3 px-4">Stock</th>
@@ -131,8 +134,11 @@ export default function ManageProducts() {
             <tbody>
               {products?.content.map((p) => (
                 <tr key={p.id} className="border-b hover:bg-gray-50">
-                  <td className="py-3 px-4">{p.name}</td>
-                  <td className="py-3 px-4">${p.discountedPrice || p.price}</td>
+                  <td className="py-3 px-4">
+                    {p.primaryImage ? <img src={p.primaryImage} alt="" className="h-10 w-10 rounded object-cover" /> : <div className="h-10 w-10 rounded bg-gray-200 flex items-center justify-center text-xs text-gray-400">N/A</div>}
+                  </td>
+                  <td className="py-3 px-4 max-w-[200px] truncate font-medium">{p.name}</td>
+                  <td className="py-3 px-4">₹{p.discountedPrice || p.price}</td>
                   <td className="py-3 px-4">{p.stockQuantity}</td>
                   <td className="py-3 px-4">{p.categoryName}</td>
                   <td className="py-3 px-4 flex gap-2">
