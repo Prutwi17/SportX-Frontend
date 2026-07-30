@@ -33,7 +33,7 @@ export default function Products() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const params: Record<string, unknown> = { page, size: 12 };
+      const params: Record<string, unknown> = { page, size: 4 };
       if (filters.categoryId) params.categoryId = filters.categoryId;
       if (filters.brandId) params.brandId = filters.brandId;
       if (filters.minPrice) params.minPrice = filters.minPrice;
@@ -42,7 +42,7 @@ export default function Products() {
 
       let res;
       if (search) {
-        res = await productService.search(search, page);
+        res = await productService.search(search, page, 4);
       } else if (Object.values(filters).some(Boolean)) {
         res = await productService.filter(params);
       } else {
