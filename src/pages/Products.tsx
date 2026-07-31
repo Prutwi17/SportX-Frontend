@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Search, SlidersHorizontal, X, PackageSearch } from 'lucide-react';
 import { productService } from '../services/productService';
 import { categoryService } from '../services/categoryService';
 import { brandService } from '../services/brandService';
 import type { Product, Category, Brand, PagedResponse } from '../types';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import { motion } from 'framer-motion';
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.4 } }),
-};
+import ProductCard from '../components/common/ProductCard';
+import SectionHeading from '../components/common/SectionHeading';
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -72,30 +70,37 @@ export default function Products() {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
+  const clearFilters = () => {
+    setFilters({ categoryId: '', brandId: '', minPrice: '', maxPrice: '', minRating: '' });
+  };
+
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-          Products
-        </h1>
-      </motion.div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+      <SectionHeading
+        eyebrow="Catalogue"
+        title="Products"
+        subtitle="Find the perfect gear for your sport"
+      />
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-4 mt-10">
         <form onSubmit={handleSearch} className="flex-1 flex gap-2">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search products..."
-            className="border border-gray-300 rounded-xl px-5 py-3 flex-1 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 outline-none transition-all"
-          />
+          <div className="relative flex-1">
+            <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search products..."
+              className="input-premium input-with-icon"
+            />
+          </div>
           <motion.button
             type="submit"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-medium shadow-md hover:shadow-lg transition-all"
+            className="btn-gradient px-6 py-3 rounded-2xl font-display font-semibold text-sm"
           >
             Search
           </motion.button>
@@ -104,12 +109,10 @@ export default function Products() {
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
           onClick={() => setShowFilters(!showFilters)}
-          className="border border-gray-300 rounded-xl px-5 py-3 font-medium hover:bg-gray-50 transition-all flex items-center gap-2"
+          className="border border-slate-200 rounded-2xl px-5 py-3 font-display font-semibold text-sm text-slate-700 hover:bg-slate-50 transition-all flex items-center gap-2"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-          </svg>
-          Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
+          <SlidersHorizontal size={16} />
+          Filters {activeFilterCount > 0 && <span className="w-5 h-5 rounded-full bg-gradient-to-r from-brand-500 to-fuchsia-500 text-white text-xs flex items-center justify-center">{activeFilterCount}</span>}
         </motion.button>
       </div>
 
@@ -118,119 +121,83 @@ export default function Products() {
         animate={{ height: showFilters ? 'auto' : 0, opacity: showFilters ? 1 : 0 }}
         className="overflow-hidden mb-6"
       >
-        <div className="bg-gray-50 rounded-2xl p-6 grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="bg-white border border-slate-100 shadow-soft rounded-3xl p-6 mt-4 grid grid-cols-2 md:grid-cols-5 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">Category</label>
             <select value={filters.categoryId} onChange={(e) => handleFilterChange('categoryId', e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-300 outline-none">
+              className="input-premium">
               <option value="">All</option>
               {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">Brand</label>
             <select value={filters.brandId} onChange={(e) => handleFilterChange('brandId', e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-300 outline-none">
+              className="input-premium">
               <option value="">All</option>
               {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Min Price</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">Min Price</label>
             <input type="number" value={filters.minPrice} onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-              placeholder="₹0" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-300 outline-none" />
+              placeholder="₹0" className="input-premium" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Max Price</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">Max Price</label>
             <input type="number" value={filters.maxPrice} onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-              placeholder="₹10000" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-300 outline-none" />
+              placeholder="₹10000" className="input-premium" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Min Rating</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">Min Rating</label>
             <select value={filters.minRating} onChange={(e) => handleFilterChange('minRating', e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-300 outline-none">
+              className="input-premium">
               <option value="">Any</option>
               <option value="4">4+ ★</option>
               <option value="3">3+ ★</option>
               <option value="2">2+ ★</option>
             </select>
           </div>
+          {activeFilterCount > 0 && (
+            <div className="col-span-full flex justify-end">
+              <button onClick={clearFilters} className="inline-flex items-center gap-1.5 text-sm font-semibold text-red-500 hover:text-red-600">
+                <X size={14} /> Clear all filters
+              </button>
+            </div>
+          )}
         </div>
       </motion.div>
 
       {loading ? (
         <LoadingSpinner />
       ) : !products || products.content.length === 0 ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20">
-          <p className="text-6xl mb-4">🔍</p>
-          <p className="text-xl text-gray-500">No products found. Try adjusting your filters.</p>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-24">
+          <div className="w-20 h-20 mx-auto rounded-3xl bg-slate-100 flex items-center justify-center mb-5">
+            <PackageSearch size={36} className="text-slate-400" />
+          </div>
+          <p className="font-display text-xl font-bold text-slate-800">No products found</p>
+          <p className="text-slate-500 mt-1.5">Try adjusting your filters or search term.</p>
         </motion.div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
             {products.content.map((product, i) => (
-              <motion.div
-                key={product.id}
-                custom={i}
-                initial="hidden"
-                animate="visible"
-                variants={fadeUp}
-              >
-                <Link
-                  to={`/products/${product.id}`}
-                  className="card-hover block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl"
-                >
-                  <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden">
-                    {product.primaryImage ? (
-                      <motion.img
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ duration: 0.4 }}
-                        src={product.primaryImage}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-gray-400 text-4xl">🏷️</span>
-                    )}
-                  </div>
-                  <div className="p-5">
-                    <h3 className="font-bold text-lg mb-1 line-clamp-1">{product.name}</h3>
-                    <p className="text-sm text-gray-500 mb-3">{product.categoryName}</p>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        {product.discountedPrice ? (
-                          <div className="flex items-center gap-2">
-                            <span className="text-xl font-bold text-indigo-600">₹{product.discountedPrice}</span>
-                            <span className="text-sm text-gray-400 line-through">₹{product.price}</span>
-                          </div>
-                        ) : (
-                          <span className="text-xl font-bold">₹{product.price}</span>
-                        )}
-                      </div>
-                      {product.averageRating > 0 && (
-                        <span className="text-sm bg-yellow-50 text-yellow-700 px-2 py-1 rounded-lg font-medium">
-                          ★ {product.averageRating.toFixed(1)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
+              <ProductCard key={product.id} product={product} index={i} />
             ))}
           </div>
 
           {products.totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-10">
+            <div className="flex justify-center gap-2 mt-12">
               {Array.from({ length: products.totalPages }, (_, i) => (
                 <motion.button
                   key={i}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setSearchParams({ page: String(i) })}
-                  className={`w-10 h-10 rounded-xl font-medium transition-all ${
+                  className={`w-10 h-10 rounded-xl font-display font-semibold transition-all ${
                     i === page
-                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'btn-gradient shadow-lg'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
                   }`}
                 >
                   {i + 1}
