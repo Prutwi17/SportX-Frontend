@@ -1,22 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Users, Package, ShoppingCart, IndianRupee, Clock, AlertTriangle, ArrowUpRight, ChevronRight } from 'lucide-react';
 import { dashboardService } from '../../services/dashboardService';
 import type { DashboardData } from '../../types';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-
-const navItems = [
-  { to: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
-  { to: '/admin/products', label: 'Products', icon: '🏷️' },
-  { to: '/admin/categories', label: 'Categories', icon: '📂' },
-  { to: '/admin/brands', label: 'Brands', icon: '🏢' },
-  { to: '/admin/orders', label: 'Orders', icon: '📦' },
-  { to: '/admin/coupons', label: 'Coupons', icon: '🎫' },
-];
+import AdminLayout from '../../components/admin/AdminLayout';
 
 export default function AdminDashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
-  const location = useLocation();
 
   useEffect(() => {
     dashboardService.getStats().then((res) => {
@@ -27,92 +20,100 @@ export default function AdminDashboard() {
 
   if (loading) return <LoadingSpinner />;
 
+  const statusColors: Record<string, string> = {
+    PENDING: 'bg-yellow-100 text-yellow-800',
+    CONFIRMED: 'bg-blue-100 text-blue-800',
+    PACKED: 'bg-indigo-100 text-indigo-800',
+    SHIPPED: 'bg-purple-100 text-purple-800',
+    OUT_FOR_DELIVERY: 'bg-orange-100 text-orange-800',
+    DELIVERED: 'bg-green-100 text-green-800',
+    CANCELLED: 'bg-red-100 text-red-800',
+  };
+
+  const stats = [
+    { label: 'Total Users', value: data?.totalUsers ?? 0, icon: Users, color: 'from-brand-500 to-purple-500', to: '/admin/dashboard' },
+    { label: 'Total Products', value: data?.totalProducts ?? 0, icon: Package, color: 'from-accent-500 to-orange-400', to: '/admin/products' },
+    { label: 'Total Orders', value: data?.totalOrders ?? 0, icon: ShoppingCart, color: 'from-emerald-500 to-teal-400', to: '/admin/orders' },
+    { label: 'Revenue', value: `₹${(data?.totalRevenue ?? 0).toLocaleString('en-IN')}`, icon: IndianRupee, color: 'from-fuchsia-500 to-pink-500', to: '/admin/dashboard' },
+    { label: 'Pending Orders', value: data?.pendingOrders ?? 0, icon: Clock, color: 'from-amber-500 to-yellow-400', to: '/admin/orders' },
+    { label: 'Low Stock Items', value: data?.lowStockProducts ?? 0, icon: AlertTriangle, color: 'from-red-500 to-rose-400', to: '/admin/products' },
+  ];
+
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <aside className="w-64 bg-white shadow-md shrink-0">
-        <div className="p-6 border-b">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Admin Panel</h2>
+    <AdminLayout>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="font-display text-2xl md:text-3xl font-extrabold text-slate-900">Dashboard</h1>
+          <p className="text-slate-500 mt-1">Overview of your store performance</p>
         </div>
-        <nav className="p-4 space-y-1">
-          {navItems.map((item) => (
+        <Link
+          to="/admin/products"
+          className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 hover:text-brand-700"
+        >
+          Manage Products
+          <ArrowUpRight size={15} />
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5 mb-8">
+        {stats.map((s, i) => (
+          <motion.div
+            key={s.label}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.06 }}
+          >
             <Link
-              key={item.to}
-              to={item.to}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                location.pathname === item.to
-                  ? 'bg-indigo-50 text-indigo-700'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
+              to={s.to}
+              className="block bg-white rounded-3xl border border-slate-100 shadow-soft hover:shadow-premium p-5 transition-all hover:-translate-y-1"
             >
-              <span>{item.icon}</span>
-              {item.label}
+              <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center mb-3 shadow-lg`}>
+                <s.icon size={18} className="text-white" />
+              </div>
+              <p className="font-display text-2xl font-extrabold text-slate-900 truncate">{s.value}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{s.label}</p>
             </Link>
-          ))}
-        </nav>
-      </aside>
+          </motion.div>
+        ))}
+      </div>
 
-      <main className="flex-1 p-8">
-        <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-gray-500 text-sm">Total Users</h3>
-            <p className="text-3xl font-bold">{data?.totalUsers}</p>
-          </div>
-          <Link to="/admin/products" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
-            <h3 className="text-gray-500 text-sm">Total Products</h3>
-            <p className="text-3xl font-bold">{data?.totalProducts}</p>
-          </Link>
-          <Link to="/admin/orders" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
-            <h3 className="text-gray-500 text-sm">Total Orders</h3>
-            <p className="text-3xl font-bold">{data?.totalOrders}</p>
-          </Link>
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-gray-500 text-sm">Revenue</h3>
-            <p className="text-3xl font-bold">₹{data?.totalRevenue.toFixed(2)}</p>
-          </div>
-          <Link to="/admin/orders" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
-            <h3 className="text-gray-500 text-sm">Pending Orders</h3>
-            <p className="text-3xl font-bold text-yellow-500">{data?.pendingOrders}</p>
-          </Link>
-          <Link to="/admin/products" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
-            <h3 className="text-gray-500 text-sm">Low Stock Items</h3>
-            <p className="text-3xl font-bold text-red-500">{data?.lowStockProducts}</p>
+      <div className="bg-white rounded-3xl border border-slate-100 shadow-soft p-7">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="font-display text-lg font-extrabold text-slate-900">Recent Orders</h2>
+          <Link to="/admin/orders" className="inline-flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700">
+            View all
+            <ChevronRight size={15} />
           </Link>
         </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Recent Orders</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b">
-                  <th className="py-2 px-4">Order #</th>
-                  <th className="py-2 px-4">Status</th>
-                  <th className="py-2 px-4">Total</th>
-                  <th className="py-2 px-4">Date</th>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b border-slate-100">
+                <th className="py-3 px-4 text-xs font-bold uppercase tracking-wide text-slate-400">Order #</th>
+                <th className="py-3 px-4 text-xs font-bold uppercase tracking-wide text-slate-400">Status</th>
+                <th className="py-3 px-4 text-xs font-bold uppercase tracking-wide text-slate-400">Total</th>
+                <th className="py-3 px-4 text-xs font-bold uppercase tracking-wide text-slate-400">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data?.recentOrders.map((order) => (
+                <tr key={order.id} className="border-b border-slate-50 hover:bg-slate-50/70 transition-colors">
+                  <td className="py-3.5 px-4 font-mono text-sm font-medium text-slate-800">{order.orderNumber}</td>
+                  <td className="py-3.5 px-4">
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${statusColors[order.status] || 'bg-gray-100 text-gray-700'}`}>
+                      {order.status.replace(/_/g, ' ')}
+                    </span>
+                  </td>
+                  <td className="py-3.5 px-4 font-display font-bold text-slate-900">₹{order.total.toLocaleString('en-IN')}</td>
+                  <td className="py-3.5 px-4 text-sm text-slate-500">
+                    {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : ''}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {data?.recentOrders.map((order) => (
-                  <tr key={order.id} className="border-b hover:bg-gray-50">
-                    <td className="py-2 px-4">{order.orderNumber}</td>
-                    <td className="py-2 px-4">
-                      <span className="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-sm">
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="py-2 px-4">₹{order.total.toFixed(2)}</td>
-                    <td className="py-2 px-4 text-sm text-gray-500">
-                      {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : ''}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </main>
-    </div>
+      </div>
+    </AdminLayout>
   );
 }

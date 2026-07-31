@@ -1,9 +1,12 @@
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
+import { motion } from 'framer-motion';
+import { Plus, Pencil, Trash2, Package } from 'lucide-react';
 import { productService } from '../../services/productService';
 import { categoryService } from '../../services/categoryService';
 import { brandService } from '../../services/brandService';
 import type { Product, Category, Brand, PagedResponse } from '../../types';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import AdminLayout from '../../components/admin/AdminLayout';
 
 export default function ManageProducts() {
   const [products, setProducts] = useState<PagedResponse<Product> | null>(null);
@@ -85,79 +88,155 @@ export default function ManageProducts() {
     setForm({ name: '', description: '', price: '', discountedPrice: '', stockQuantity: '10', categoryId: '', brandId: '', imageUrls: '' });
   };
 
+  const inputClass = 'input-premium w-full';
+  const labelClass = 'block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide';
+
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Manage Products</h1>
+    <AdminLayout>
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-brand-500 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
+            <Package size={20} className="text-white" />
+          </div>
+          <div>
+            <h1 className="font-display text-2xl font-extrabold text-slate-900">Manage Products</h1>
+            <p className="text-slate-500 text-sm">Add, edit and remove products</p>
+          </div>
+        </div>
         <button
           onClick={() => { setShowForm(!showForm); setEditingId(null); resetForm(); }}
-          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+          className={`inline-flex items-center gap-2 px-5 py-3 rounded-2xl font-display font-bold text-sm transition-all ${showForm ? 'bg-white border-2 border-slate-200 text-slate-700 hover:bg-slate-50' : 'btn-gradient shadow-lg'}`}
         >
-          {showForm ? 'Cancel' : '+ Add Product'}
+          {showForm ? 'Cancel' : <><Plus size={16} /> Add Product</>}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">{editingId ? 'Edit Product' : 'New Product'}</h2>
+        <motion.form
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          onSubmit={handleSubmit}
+          className="bg-white rounded-3xl border border-slate-100 shadow-soft p-7 mb-8"
+        >
+          <h2 className="font-display text-lg font-extrabold text-slate-900 mb-5">{editingId ? 'Edit Product' : 'New Product'}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div><label className="block text-sm font-medium">Name</label><input value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} className="w-full border rounded px-3 py-2 mt-1" required /></div>
-            <div><label className="block text-sm font-medium">Price</label><input type="number" step="0.01" value={form.price} onChange={(e) => setForm((p) => ({ ...p, price: e.target.value }))} className="w-full border rounded px-3 py-2 mt-1" required /></div>
-            <div><label className="block text-sm font-medium">Discounted Price</label><input type="number" step="0.01" value={form.discountedPrice} onChange={(e) => setForm((p) => ({ ...p, discountedPrice: e.target.value }))} className="w-full border rounded px-3 py-2 mt-1" /></div>
-            <div><label className="block text-sm font-medium">Stock Quantity</label><input type="number" value={form.stockQuantity} onChange={(e) => setForm((p) => ({ ...p, stockQuantity: e.target.value }))} className="w-full border rounded px-3 py-2 mt-1" required /></div>
-            <div><label className="block text-sm font-medium">Category</label><select value={form.categoryId} onChange={(e) => setForm((p) => ({ ...p, categoryId: e.target.value }))} className="w-full border rounded px-3 py-2 mt-1" required><option value="">Select</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
-            <div><label className="block text-sm font-medium">Brand</label><select value={form.brandId} onChange={(e) => setForm((p) => ({ ...p, brandId: e.target.value }))} className="w-full border rounded px-3 py-2 mt-1" required><option value="">Select</option>{brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}</select></div>
-            <div className="md:col-span-2"><label className="block text-sm font-medium">Description</label><textarea value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} className="w-full border rounded px-3 py-2 mt-1" rows={3} /></div>
-            <div className="md:col-span-2"><label className="block text-sm font-medium">Image URLs (comma-separated)</label><input value={form.imageUrls} onChange={(e) => setForm((p) => ({ ...p, imageUrls: e.target.value }))} className="w-full border rounded px-3 py-2 mt-1" placeholder="https://images.unsplash.com/photo-..." />
-              {form.imageUrls && <img src={form.imageUrls.split(',')[0].trim()} alt="preview" className="h-24 mt-2 rounded object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />}
+            <div>
+              <label className={labelClass}>Name</label>
+              <input value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} className={inputClass} required />
+            </div>
+            <div>
+              <label className={labelClass}>Price (₹)</label>
+              <input type="number" step="0.01" value={form.price} onChange={(e) => setForm((p) => ({ ...p, price: e.target.value }))} className={inputClass} required />
+            </div>
+            <div>
+              <label className={labelClass}>Discounted Price (₹)</label>
+              <input type="number" step="0.01" value={form.discountedPrice} onChange={(e) => setForm((p) => ({ ...p, discountedPrice: e.target.value }))} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Stock Quantity</label>
+              <input type="number" value={form.stockQuantity} onChange={(e) => setForm((p) => ({ ...p, stockQuantity: e.target.value }))} className={inputClass} required />
+            </div>
+            <div>
+              <label className={labelClass}>Category</label>
+              <select value={form.categoryId} onChange={(e) => setForm((p) => ({ ...p, categoryId: e.target.value }))} className={inputClass} required>
+                <option value="">Select</option>
+                {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Brand</label>
+              <select value={form.brandId} onChange={(e) => setForm((p) => ({ ...p, brandId: e.target.value }))} className={inputClass} required>
+                <option value="">Select</option>
+                {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+              </select>
+            </div>
+            <div className="md:col-span-2">
+              <label className={labelClass}>Description</label>
+              <textarea value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} className={inputClass} rows={3} />
+            </div>
+            <div className="md:col-span-2">
+              <label className={labelClass}>Image URLs (comma-separated)</label>
+              <input value={form.imageUrls} onChange={(e) => setForm((p) => ({ ...p, imageUrls: e.target.value }))} className={inputClass} placeholder="https://images.unsplash.com/photo-..." />
+              {form.imageUrls && <img src={form.imageUrls.split(',')[0].trim()} alt="preview" className="h-24 mt-2 rounded-xl object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />}
             </div>
           </div>
-          <button type="submit" className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 mt-4">
-            {editingId ? 'Update' : 'Create'}
+          <button type="submit" className="btn-gradient px-6 py-3 rounded-2xl font-display font-semibold text-sm mt-5">
+            {editingId ? 'Update Product' : 'Create Product'}
           </button>
-        </form>
+        </motion.form>
       )}
 
       {loading ? <LoadingSpinner /> : (
-        <div className="bg-white rounded-lg shadow overflow-x-auto">
+        <div className="bg-white rounded-3xl border border-slate-100 shadow-soft overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="bg-gray-50">
+            <thead className="bg-slate-50 border-b border-slate-100">
               <tr>
-                <th className="py-3 px-4">Image</th>
-                <th className="py-3 px-4">Name</th>
-                <th className="py-3 px-4">Price</th>
-                <th className="py-3 px-4">Stock</th>
-                <th className="py-3 px-4">Category</th>
-                <th className="py-3 px-4">Actions</th>
+                <th className="py-3.5 px-5 text-xs font-bold uppercase tracking-wide text-slate-400">Image</th>
+                <th className="py-3.5 px-5 text-xs font-bold uppercase tracking-wide text-slate-400">Name</th>
+                <th className="py-3.5 px-5 text-xs font-bold uppercase tracking-wide text-slate-400">Price</th>
+                <th className="py-3.5 px-5 text-xs font-bold uppercase tracking-wide text-slate-400">Stock</th>
+                <th className="py-3.5 px-5 text-xs font-bold uppercase tracking-wide text-slate-400">Category</th>
+                <th className="py-3.5 px-5 text-xs font-bold uppercase tracking-wide text-slate-400">Actions</th>
               </tr>
             </thead>
             <tbody>
               {products?.content.map((p) => (
-                <tr key={p.id} className="border-b hover:bg-gray-50">
-                  <td className="py-3 px-4">
-                    {p.primaryImage ? <img src={p.primaryImage} alt="" className="h-10 w-10 rounded object-cover" /> : <div className="h-10 w-10 rounded bg-gray-200 flex items-center justify-center text-xs text-gray-400">N/A</div>}
+                <tr key={p.id} className="border-b border-slate-50 hover:bg-slate-50/70 transition-colors">
+                  <td className="py-3 px-5">
+                    {p.primaryImage ? (
+                      <img src={p.primaryImage} alt="" className="h-11 w-11 rounded-xl object-cover" />
+                    ) : (
+                      <div className="h-11 w-11 rounded-xl bg-slate-100 flex items-center justify-center text-xs text-slate-400">N/A</div>
+                    )}
                   </td>
-                  <td className="py-3 px-4 max-w-[200px] truncate font-medium">{p.name}</td>
-                  <td className="py-3 px-4">₹{p.discountedPrice || p.price}</td>
-                  <td className="py-3 px-4">{p.stockQuantity}</td>
-                  <td className="py-3 px-4">{p.categoryName}</td>
-                  <td className="py-3 px-4 flex gap-2">
-                    <button onClick={() => handleEdit(p)} className="text-indigo-600 hover:underline text-sm">Edit</button>
-                    <button onClick={() => handleDelete(p.id)} className="text-red-500 hover:underline text-sm">Delete</button>
+                  <td className="py-3 px-5 max-w-[200px] truncate font-semibold text-slate-800">{p.name}</td>
+                  <td className="py-3 px-5">
+                    <div>
+                      {p.discountedPrice ? (
+                        <>
+                          <span className="font-display font-bold text-slate-900">₹{p.discountedPrice}</span>
+                          <span className="text-xs text-slate-400 line-through ml-1.5">₹{p.price}</span>
+                        </>
+                      ) : (
+                        <span className="font-display font-bold text-slate-900">₹{p.price}</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-3 px-5">
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${p.stockQuantity <= 5 ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                      {p.stockQuantity}
+                    </span>
+                  </td>
+                  <td className="py-3 px-5 text-sm text-slate-600">{p.categoryName}</td>
+                  <td className="py-3 px-5">
+                    <div className="flex gap-2">
+                      <button onClick={() => handleEdit(p)} className="inline-flex items-center gap-1 text-brand-600 hover:text-brand-700 text-sm font-semibold transition-colors">
+                        <Pencil size={13} /> Edit
+                      </button>
+                      <button onClick={() => handleDelete(p.id)} className="inline-flex items-center gap-1 text-red-500 hover:text-red-700 text-sm font-semibold transition-colors">
+                        <Trash2 size={13} /> Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
           {products && products.totalPages > 1 && (
-            <div className="flex justify-center gap-2 p-4">
+            <div className="flex justify-center gap-2 p-5">
               {Array.from({ length: products.totalPages }, (_, i) => (
-                <button key={i} onClick={() => setPage(i)} className={`px-3 py-1 rounded ${i === page ? 'bg-indigo-600 text-white' : 'bg-gray-200'}`}>{i + 1}</button>
+                <button
+                  key={i}
+                  onClick={() => setPage(i)}
+                  className={`w-9 h-9 rounded-xl font-display font-semibold text-sm transition-all ${i === page ? 'btn-gradient shadow-lg' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                >
+                  {i + 1}
+                </button>
               ))}
             </div>
           )}
         </div>
       )}
-    </div>
+    </AdminLayout>
   );
 }
