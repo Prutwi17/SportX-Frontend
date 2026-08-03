@@ -32,7 +32,8 @@ export default function Profile() {
           phone: userRes.data.phone || '',
         });
         setLoading(false);
-      });
+      })
+      .catch(() => setLoading(false));
   }, []);
 
   const handleUpdateProfile = async (e: FormEvent) => {
@@ -65,14 +66,18 @@ export default function Profile() {
   };
 
   const handleDeleteAddress = async (id: number) => {
-    await addressService.delete(id);
-    setAddresses((prev) => prev.filter((a) => a.id !== id));
+    try {
+      await addressService.delete(id);
+      setAddresses((prev) => prev.filter((a) => a.id !== id));
+    } catch { setMsg('Failed to delete address'); }
   };
 
   const handleSetDefault = async (id: number) => {
-    await addressService.setDefault(id);
-    const updated = await addressService.getAll();
-    setAddresses(updated.data);
+    try {
+      await addressService.setDefault(id);
+      const updated = await addressService.getAll();
+      setAddresses(updated.data);
+    } catch { setMsg('Failed to set default address'); }
   };
 
   if (loading) return <LoadingSpinner />;

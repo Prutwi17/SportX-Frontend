@@ -5,6 +5,7 @@ import { Package, ChevronRight, ArrowRight } from 'lucide-react';
 import { orderService } from '../services/orderService';
 import type { Order, PagedResponse } from '../types';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import ProductImage from '../components/common/ProductImage';
 
 export default function Orders() {
   const [orders, setOrders] = useState<PagedResponse<Order> | null>(null);
@@ -16,7 +17,7 @@ export default function Orders() {
     orderService.getUserOrders(page).then((res) => {
       setOrders(res.data);
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   }, [page]);
 
   if (loading) return <LoadingSpinner />;
@@ -90,7 +91,7 @@ export default function Orders() {
                     {order.items.slice(0, 4).map((item) => (
                       <div key={item.id} className="w-11 h-11 rounded-xl overflow-hidden bg-slate-50 border border-slate-100">
                         {item.productImage ? (
-                          <img src={item.productImage} alt={item.productName} className="w-full h-full object-cover" />
+                          <ProductImage src={item.productImage} alt={item.productName} className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-slate-300 text-xs">🏷️</div>
                         )}

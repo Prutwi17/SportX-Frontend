@@ -4,23 +4,24 @@ import { motion } from 'framer-motion';
 import { Minus, Plus, ShoppingCart, Heart, Truck, ShieldCheck, RotateCcw, Star, ChevronRight, Zap } from 'lucide-react';
 import { productService } from '../services/productService';
 import { cartService } from '../services/cartService';
-import { wishlistService } from '../services/wishlistService';
 import { reviewService } from '../services/reviewService';
 import { useAuth } from '../context/AuthContext';
+import { useWishlist } from '../context/WishlistContext';
 import type { Product, Review } from '../types';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
 export default function ProductDetails() {
   const { id } = useParams<{ id: string }>();
   const { isAuthenticated } = useAuth();
+  const { isWishlisted, toggle } = useWishlist();
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const [inWishlist, setInWishlist] = useState(false);
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
   const [addingToCart, setAddingToCart] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -30,10 +31,7 @@ export default function ProductDetails() {
       setLoading(false);
     });
     reviewService.getProductReviews(Number(id)).then((res) => setReviews(res.data));
-    if (isAuthenticated) {
-      wishlistService.check(Number(id)).then((res) => setInWishlist(res.data));
-    }
-  }, [id, isAuthenticated]);
+  }, [id]);
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) { navigate('/login'); return; }
@@ -47,15 +45,7 @@ export default function ProductDetails() {
 
   const handleToggleWishlist = async () => {
     if (!isAuthenticated) { navigate('/login'); return; }
-    try {
-      if (inWishlist) {
-        await wishlistService.removeItem(product!.id);
-        setInWishlist(false);
-      } else {
-        await wishlistService.addItem(product!.id);
-        setInWishlist(true);
-      }
-    } catch { /* ignore */ }
+    await toggle(product!.id);
   };
 
   const handleReviewSubmit = async (e: React.FormEvent) => {
@@ -72,6 +62,7 @@ export default function ProductDetails() {
   if (loading) return <LoadingSpinner />;
   if (!product) return <p className="text-center py-8">Product not found.</p>;
 
+  const inWishlist = isWishlisted(product.id);
   const outOfStock = product.stockQuantity === 0;
   const discountPct = product.discountedPrice
     ? Math.round(((product.price - product.discountedPrice) / product.price) * 100)
@@ -96,14 +87,15 @@ export default function ProductDetails() {
           transition={{ duration: 0.5 }}
           className="relative"
         >
-          <div className="relative aspect-square bg-gradient-to-br from-slate-50 to-slate-100 rounded-[32px] overflow-hidden border border-slate-100">
-            {product.primaryImage ? (
+          <div className="relative aspect-square bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-[32px] overflow-hidden border border-slate-100">
+            {product.primaryImage && !imageError ? (
               <motion.img
                 src={product.primaryImage}
                 alt={product.name}
                 className="w-full h-full object-cover"
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.4 }}
+                onError={() => setImageError(true)}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-slate-300">

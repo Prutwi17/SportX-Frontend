@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import ThemeToggle from '../common/ThemeToggle';
 import {
   LayoutDashboard,
   Package,
@@ -61,7 +62,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               );
             })}
           </nav>
-          <div className="p-4 border-t border-white/10">
+          <div className="p-4 border-t border-white/10 flex items-center justify-between">
             <Link
               to="/"
               className="flex items-center gap-2 text-slate-400 hover:text-white text-sm font-medium transition-colors"
@@ -69,13 +70,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <span className="w-2 h-2 rounded-full bg-green-400" />
               View Store
             </Link>
+            <ThemeToggle />
           </div>
         </div>
       </aside>
 
       <div className="flex-1 lg:pl-64">
         <div className="lg:hidden sticky top-0 z-40 glass shadow-sm border-b border-slate-200 px-4 py-3">
-          <div className="flex gap-1 overflow-x-auto">
+          <div className="flex gap-1 overflow-x-auto items-center">
             {navItems.map((item) => {
               const Icon = item.icon;
               const active = location.pathname === item.to;
@@ -92,6 +94,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </Link>
               );
             })}
+            <div className="ml-auto shrink-0">
+              <ThemeToggle />
+            </div>
           </div>
         </div>
         <main className="p-4 md:p-8">{children}</main>

@@ -7,6 +7,7 @@ import { brandService } from '../../services/brandService';
 import type { Product, Category, Brand, PagedResponse } from '../../types';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import AdminLayout from '../../components/admin/AdminLayout';
+import ProductImage from '../../components/common/ProductImage';
 
 export default function ManageProducts() {
   const [products, setProducts] = useState<PagedResponse<Product> | null>(null);
@@ -26,7 +27,7 @@ export default function ManageProducts() {
     productService.getAll(page, 10).then((res) => {
       setProducts(res.data);
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -59,7 +60,8 @@ export default function ManageProducts() {
       resetForm();
       fetchProducts();
     } catch (err) {
-      alert('Failed to save product');
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to save product';
+      alert(msg);
     }
   };
 
@@ -80,8 +82,13 @@ export default function ManageProducts() {
 
   const handleDelete = async (id: number) => {
     if (!confirm('Delete this product?')) return;
-    await productService.delete(id);
-    fetchProducts();
+    try {
+      await productService.delete(id);
+      fetchProducts();
+    } catch (err) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to delete product';
+      alert(msg);
+    }
   };
 
   const resetForm = () => {
@@ -157,7 +164,7 @@ export default function ManageProducts() {
             <div className="md:col-span-2">
               <label className={labelClass}>Image URLs (comma-separated)</label>
               <input value={form.imageUrls} onChange={(e) => setForm((p) => ({ ...p, imageUrls: e.target.value }))} className={inputClass} placeholder="https://images.unsplash.com/photo-..." />
-              {form.imageUrls && <img src={form.imageUrls.split(',')[0].trim()} alt="preview" className="h-24 mt-2 rounded-xl object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />}
+              {form.imageUrls && <ProductImage src={form.imageUrls.split(',')[0].trim()} alt="preview" className="h-24 mt-2 rounded-xl object-cover" />}
             </div>
           </div>
           <button type="submit" className="btn-gradient px-6 py-3 rounded-2xl font-display font-semibold text-sm mt-5">
@@ -183,11 +190,7 @@ export default function ManageProducts() {
               {products?.content.map((p) => (
                 <tr key={p.id} className="border-b border-slate-50 hover:bg-slate-50/70 transition-colors">
                   <td className="py-3 px-5">
-                    {p.primaryImage ? (
-                      <img src={p.primaryImage} alt="" className="h-11 w-11 rounded-xl object-cover" />
-                    ) : (
-                      <div className="h-11 w-11 rounded-xl bg-slate-100 flex items-center justify-center text-xs text-slate-400">N/A</div>
-                    )}
+                    <ProductImage src={p.primaryImage} alt={p.name} className="h-11 w-11 rounded-xl object-cover" />
                   </td>
                   <td className="py-3 px-5 max-w-[200px] truncate font-semibold text-slate-800">{p.name}</td>
                   <td className="py-3 px-5">

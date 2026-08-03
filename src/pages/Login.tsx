@@ -18,9 +18,22 @@ export default function Login() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setError('Please enter your email address');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (!password) {
+      setError('Please enter your password');
+      return;
+    }
     setLoading(true);
     try {
-      const res = await authService.login(email, password);
+      const res = await authService.login(trimmedEmail, password);
       login(res.data.token, {
         email: res.data.email,
         role: res.data.role,
@@ -29,8 +42,15 @@ export default function Login() {
       });
       navigate('/');
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Invalid email or password';
-      setError(msg);
+      const e = err as { response?: { data?: { message?: string; errors?: Record<string, string> } } };
+      const data = e.response?.data;
+      if (data?.errors && Object.keys(data.errors).length > 0) {
+        setError(Object.values(data.errors)[0]);
+      } else if (data?.message) {
+        setError(data.message);
+      } else {
+        setError('Unable to connect to the server. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -111,7 +131,7 @@ export default function Login() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5 mt-8">
+          <form onSubmit={handleSubmit} noValidate className="space-y-5 mt-8">
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
               <div className="relative group">
@@ -149,6 +169,12 @@ export default function Login() {
                   {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                 </button>
               </div>
+            </div>
+
+            <div className="flex justify-end -mt-1">
+              <Link to="/forgot-password" className="text-sm font-semibold text-brand-600 hover:text-brand-700 transition-colors">
+                Forgot password?
+              </Link>
             </div>
 
             <button type="submit" disabled={loading} className="btn-gradient w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-display font-bold text-base">

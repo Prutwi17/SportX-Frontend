@@ -24,11 +24,12 @@ import ronaldoImg from '../assets/image/RONALDO.png';
 export default function Home() {
   const [featured, setFeatured] = useState<PagedResponse<Product> | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [productPage, setProductPage] = useState(0);
 
   useEffect(() => {
-    productService.getAll(0, 8).then((res) => setFeatured(res.data));
+    productService.getAll(productPage, 16).then((res) => setFeatured(res.data));
     categoryService.getAll().then((res) => setCategories(res.data));
-  }, []);
+  }, [productPage]);
 
   return (
     <div className="overflow-x-hidden">
@@ -139,7 +140,7 @@ export default function Home() {
                 transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}
                 className="absolute -left-8 top-16 glass rounded-2xl px-5 py-4 shadow-xl"
               >
-                <p className="flex items-center gap-2 font-display font-bold text-dark-900 text-lg">
+                <p className="flex items-center gap-2 font-display font-bold text-white-900 text-lg">
                   <Trophy size={18} className="text-accent-500" />
                   #1 Sports Store
                 </p>
@@ -156,14 +157,14 @@ export default function Home() {
                     <Star key={s} size={13} className="fill-current" />
                   ))}
                 </p>
-                <p className="font-display font-bold text-dark-900 text-sm mt-1">4.9/5 Rating</p>
+                <p className="font-display font-bold text-white-900 text-sm mt-1">4.9/5 Rating</p>
                 <p className="text-xs text-slate-500">2,400+ reviews</p>
               </motion.div>
             </motion.div>
           </div>
         </div>
 
-        <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-slate-50 to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-slate-50 dark:from-slate-800 to-transparent pointer-events-none" />
       </section>
 
       {/* ============ TRUST BAR ============ */}
@@ -197,18 +198,66 @@ export default function Home() {
 
       {/* ============ FEATURED PRODUCTS ============ */}
       {featured && featured.content.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-20">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-14 md:py-16">
           <SectionHeading
             eyebrow="Top Picks"
             title="Featured Products"
             subtitle="Hand-picked gear our athletes love the most"
+            compact
           />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <motion.div
+            key={productPage}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-3 lg:gap-2 xl:gap-3"
+          >
             {featured.content.map((product, i) => (
               <ProductCard key={product.id} product={product} index={i} />
             ))}
-          </div>
-          <div className="text-center mt-12">
+          </motion.div>
+
+          {featured.totalPages > 1 && (
+            <div className="flex justify-center items-center gap-2 mt-10">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setProductPage((p) => Math.max(0, p - 1))}
+                disabled={productPage === 0}
+                aria-label="Previous page"
+                className="w-10 h-10 rounded-xl font-display font-semibold transition-all bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                ‹
+              </motion.button>
+              {Array.from({ length: featured.totalPages }, (_, i) => (
+                <motion.button
+                  key={i}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setProductPage(i)}
+                  className={`w-10 h-10 rounded-xl font-display font-semibold transition-all ${
+                    i === productPage
+                      ? 'btn-gradient shadow-lg'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  {i + 1}
+                </motion.button>
+              ))}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setProductPage((p) => Math.min(featured.totalPages - 1, p + 1))}
+                disabled={featured.last}
+                aria-label="Next page"
+                className="w-10 h-10 rounded-xl font-display font-semibold transition-all bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                ›
+              </motion.button>
+            </div>
+          )}
+
+          <div className="text-center mt-10">
             <Link
               to="/products"
               className="btn-outline inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl font-display font-semibold text-sm"

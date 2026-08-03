@@ -31,7 +31,7 @@ export default function Products() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const params: Record<string, unknown> = { page, size: 4 };
+      const params: Record<string, unknown> = { page, size: 8 };
       if (filters.categoryId) params.categoryId = filters.categoryId;
       if (filters.brandId) params.brandId = filters.brandId;
       if (filters.minPrice) params.minPrice = filters.minPrice;
@@ -40,7 +40,7 @@ export default function Products() {
 
       let res;
       if (search) {
-        res = await productService.search(search, page, 4);
+        res = await productService.search(search, page, 8);
       } else if (Object.values(filters).some(Boolean)) {
         res = await productService.filter(params);
       } else {
@@ -63,7 +63,12 @@ export default function Products() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setSearchParams({ q: search });
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set('q', search);
+      next.set('page', '0');
+      return next;
+    });
   };
 
   const handleFilterChange = (key: string, value: string) => {
@@ -77,7 +82,7 @@ export default function Products() {
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-12">
       <SectionHeading
         eyebrow="Catalogue"
         title="Products"
@@ -180,7 +185,7 @@ export default function Products() {
         </motion.div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4 mt-8">
             {products.content.map((product, i) => (
               <ProductCard key={product.id} product={product} index={i} />
             ))}
@@ -193,7 +198,13 @@ export default function Products() {
                   key={i}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  onClick={() => setSearchParams({ page: String(i) })}
+                  onClick={() =>
+                    setSearchParams((prev) => {
+                      const next = new URLSearchParams(prev);
+                      next.set('page', String(i));
+                      return next;
+                    })
+                  }
                   className={`w-10 h-10 rounded-xl font-display font-semibold transition-all ${
                     i === page
                       ? 'btn-gradient shadow-lg'

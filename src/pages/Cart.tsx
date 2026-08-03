@@ -5,6 +5,7 @@ import { Minus, Plus, Trash2, ShoppingCart, ArrowRight, Truck, Tag } from 'lucid
 import { cartService } from '../services/cartService';
 import type { Cart as CartType } from '../types';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import ProductImage from '../components/common/ProductImage';
 
 export default function Cart() {
   const [cart, setCart] = useState<CartType | null>(null);
@@ -96,19 +97,15 @@ export default function Cart() {
                 animate={{ opacity: removingId === item.id ? 0 : 1, x: removingId === item.id ? 50 : 0 }}
                 exit={{ opacity: 0, x: 50 }}
                 transition={{ duration: 0.3 }}
-                className="flex gap-5 bg-white rounded-3xl border border-slate-100 shadow-soft hover:shadow-premium p-5 transition-all"
+                className="flex gap-4 sm:gap-5 bg-white rounded-2xl border border-slate-100 shadow-soft hover:shadow-premium p-4 sm:p-5 transition-all"
               >
-                <div className="w-24 h-24 rounded-2xl overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 shrink-0">
-                  {item.productImage ? (
-                    <img src={item.productImage} alt={item.productName} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-300 text-2xl">🏷️</div>
-                  )}
+                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl sm:rounded-2xl overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 shrink-0">
+                  <ProductImage src={item.productImage} alt={item.productName} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-display font-bold text-slate-900 truncate">{item.productName}</h3>
                   <p className="text-sm text-slate-400 mt-0.5">₹{item.price.toLocaleString('en-IN')} each</p>
-                  <p className="font-display font-extrabold text-xl text-gradient mt-1.5">
+                  <p className="font-display font-extrabold text-lg sm:text-xl text-gradient mt-1.5">
                     ₹{item.subtotal.toLocaleString('en-IN')}
                   </p>
                   <div className="flex items-center gap-4 mt-3">
@@ -156,7 +153,7 @@ export default function Cart() {
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white rounded-3xl border border-slate-100 shadow-soft p-7 h-fit sticky top-24"
+          className="bg-white rounded-2xl border border-slate-100 shadow-soft p-6 sm:p-7 h-fit sticky top-24"
         >
           <h3 className="font-display text-xl font-extrabold text-slate-900 mb-6">Order Summary</h3>
 

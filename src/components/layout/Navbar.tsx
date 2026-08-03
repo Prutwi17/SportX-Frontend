@@ -1,9 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useWishlist } from '../../context/WishlistContext';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cartService } from '../../services/cartService';
-import { wishlistService } from '../../services/wishlistService';
+import ThemeToggle from '../common/ThemeToggle';
 import {
   ShoppingCart,
   Heart,
@@ -26,11 +27,11 @@ const navLinks = [
 
 export default function Navbar() {
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
+  const { count: wishlistCount } = useWishlist();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
-  const [wishlistCount, setWishlistCount] = useState(0);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -39,12 +40,8 @@ export default function Navbar() {
       cartService.getCart().then((res) => {
         setCartCount(res.data.totalItems || 0);
       }).catch(() => setCartCount(0));
-      wishlistService.getWishlist().then((res) => {
-        setWishlistCount(res.data.length || 0);
-      }).catch(() => setWishlistCount(0));
     } else {
       setCartCount(0);
-      setWishlistCount(0);
     }
   }, [isAuthenticated]);
 
@@ -105,6 +102,7 @@ export default function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center gap-2">
+            <ThemeToggle />
             {isAuthenticated ? (
               <>
                 <IconLink to="/cart" icon={ShoppingCart} count={cartCount} label="Cart" />
@@ -224,6 +222,10 @@ export default function Navbar() {
                   <MobileLink to="/register" label="Register" onClick={() => setMobileOpen(false)} />
                 </>
               )}
+              <div className="flex items-center justify-between px-3 pt-2 mt-2 border-t border-slate-200/60">
+                <span className="text-xs font-semibold text-slate-400">Theme</span>
+                <ThemeToggle />
+              </div>
             </div>
           </motion.div>
         )}

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { MapPin, CreditCard, Ticket, StickyNote, ArrowRight, Banknote, Wallet, Lock } from 'lucide-react';
 import { addressService } from '../services/addressService';
 import { orderService } from '../services/orderService';
-import { cartService } from '../services/cartService';
+import { cartService, notifyCartUpdated } from '../services/cartService';
 import type { Address, Cart } from '../types';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
@@ -30,7 +30,7 @@ export default function Checkout() {
       if (def) setSelectedAddressId(def.id);
       else if (addrRes.data.length > 0) setSelectedAddressId(addrRes.data[0].id);
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   }, []);
 
   const handlePlaceOrder = async (e: FormEvent) => {
@@ -44,6 +44,7 @@ export default function Checkout() {
         couponCode: couponCode || undefined,
         notes: notes || undefined,
       });
+      notifyCartUpdated();
       navigate(`/orders/${res.data.id}`);
     } catch (err: unknown) {
       alert((err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to place order');
@@ -56,7 +57,8 @@ export default function Checkout() {
 
   const subtotal = cart?.subtotal || 0;
   const shipping = 49;
-  const total = subtotal + shipping;
+  const tax = Math.round(subtotal * 0.18);
+  const total = subtotal + shipping + tax;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
@@ -198,6 +200,10 @@ export default function Checkout() {
             <hr className="my-5 border-slate-100" />
             <div className="flex justify-between mb-2 text-sm"><span className="text-slate-500">Subtotal</span><span className="font-semibold text-slate-800">₹{subtotal.toLocaleString('en-IN')}</span></div>
             <div className="flex justify-between mb-2 text-sm"><span className="text-slate-500">Shipping</span><span className="font-semibold text-slate-800">₹{shipping.toLocaleString('en-IN')}</span></div>
+            <div className="flex justify-between mb-2 text-sm"><span className="text-slate-500">Tax (18%)</span><span className="font-semibold text-slate-800">₹{tax.toLocaleString('en-IN')}</span></div>
+            {couponCode.trim() && (
+              <div className="flex justify-between mb-2 text-sm"><span className="text-slate-500">Coupon</span><span className="font-semibold text-emerald-600">{couponCode.trim().toUpperCase()} · applied at checkout</span></div>
+            )}
             <hr className="my-5 border-slate-100" />
             <div className="flex justify-between font-display font-extrabold text-xl mb-6">
               <span className="text-slate-900">Total</span>

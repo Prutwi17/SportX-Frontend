@@ -132,7 +132,7 @@ export default function Footer() {
             <div className="flex flex-col gap-3.5 text-sm text-slate-400">
               <p className="flex items-start gap-3">
                 <MapPin size={17} className="text-brand-400 shrink-0 mt-0.5" />
-                SportX HQ, Mumbai, India
+                SportX HQ, Bengaluru, India
               </p>
               <p className="flex items-center gap-3">
                 <Mail size={17} className="text-brand-400 shrink-0" />
@@ -140,7 +140,7 @@ export default function Footer() {
               </p>
               <p className="flex items-center gap-3">
                 <Phone size={17} className="text-brand-400 shrink-0" />
-                +91 98765 43210
+                +91 91100 91100
               </p>
             </div>
             <div className="flex items-center gap-2 mt-5">

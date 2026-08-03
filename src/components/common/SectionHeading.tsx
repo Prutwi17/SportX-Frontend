@@ -6,9 +6,10 @@ interface Props {
   subtitle?: string;
   align?: 'center' | 'left';
   dark?: boolean;
+  compact?: boolean;
 }
 
-export default function SectionHeading({ eyebrow, title, subtitle, align = 'center', dark = false }: Props) {
+export default function SectionHeading({ eyebrow, title, subtitle, align = 'center', dark = false, compact = false }: Props) {
   const alignClass = align === 'center' ? 'text-center mx-auto' : 'text-left';
   return (
     <motion.div
@@ -16,7 +17,7 @@ export default function SectionHeading({ eyebrow, title, subtitle, align = 'cent
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className={`max-w-2xl mb-12 ${alignClass}`}
+      className={`max-w-2xl ${compact ? 'mb-8' : 'mb-12'} ${alignClass}`}
     >
       {eyebrow && (
         <span className={`inline-block text-xs font-bold uppercase tracking-[0.25em] mb-3 px-3 py-1.5 rounded-full ${

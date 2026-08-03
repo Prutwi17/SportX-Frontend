@@ -22,9 +22,28 @@ export default function Register() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+    const firstName = form.firstName.trim();
+    const lastName = form.lastName.trim();
+    const email = form.email.trim();
+    if (!firstName) {
+      setError('Please enter your first name');
+      return;
+    }
+    if (!lastName) {
+      setError('Please enter your last name');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (form.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
     setLoading(true);
     try {
-      const res = await authService.register(form);
+      const res = await authService.register({ firstName, lastName, email, password: form.password, phone: form.phone.trim() });
       login(res.data.token, {
         email: res.data.email,
         role: res.data.role,
@@ -33,8 +52,15 @@ export default function Register() {
       });
       navigate('/');
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Registration failed';
-      setError(msg);
+      const e = err as { response?: { data?: { message?: string; errors?: Record<string, string> } } };
+      const data = e.response?.data;
+      if (data?.errors && Object.keys(data.errors).length > 0) {
+        setError(Object.values(data.errors)[0]);
+      } else if (data?.message) {
+        setError(data.message);
+      } else {
+        setError('Unable to connect to the server. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -114,7 +140,7 @@ export default function Register() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5 mt-8">
+          <form onSubmit={handleSubmit} noValidate className="space-y-5 mt-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">First Name</label>
