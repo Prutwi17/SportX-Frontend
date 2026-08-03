@@ -17,7 +17,7 @@ export default function ManageBrands() {
     brandService.getAll().then((res) => {
       setBrands(res.data);
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   };
 
   useEffect(() => { fetchBrands(); }, []);
@@ -40,8 +40,13 @@ export default function ManageBrands() {
 
   const handleDelete = async (id: number) => {
     if (!confirm('Delete this brand?')) return;
-    await brandService.delete(id);
-    fetchBrands();
+    try {
+      await brandService.delete(id);
+      fetchBrands();
+    } catch (err) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to delete brand';
+      alert(msg);
+    }
   };
 
   if (loading) return <LoadingSpinner />;

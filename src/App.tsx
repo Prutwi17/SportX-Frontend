@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { WishlistProvider } from './context/WishlistContext';
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import AdminRoute from './components/common/AdminRoute';
@@ -7,6 +9,7 @@ import AdminRoute from './components/common/AdminRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
 import Products from './pages/Products';
 import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
@@ -28,12 +31,15 @@ import ManageCoupons from './pages/admin/ManageCoupons';
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <Routes>
+      <ThemeProvider>
+        <AuthProvider>
+          <WishlistProvider>
+            <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/products" element={<Products />} />
             <Route path="/products/:id" element={<ProductDetails />} />
             <Route path="/about" element={<About />} />
@@ -53,8 +59,10 @@ export default function App() {
             <Route path="/admin/orders" element={<AdminRoute><ManageOrders /></AdminRoute>} />
             <Route path="/admin/coupons" element={<AdminRoute><ManageCoupons /></AdminRoute>} />
           </Route>
-        </Routes>
+          </Routes>
+        </WishlistProvider>
       </AuthProvider>
+    </ThemeProvider>
     </BrowserRouter>
   );
 }

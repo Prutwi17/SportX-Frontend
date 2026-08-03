@@ -28,14 +28,20 @@ export default function ManageOrders() {
     orderService.getAllOrders(page, 15).then((res) => {
       setOrders(res.data);
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   };
 
   useEffect(() => { fetchOrders(); }, [page]);
 
   const handleStatusUpdate = async (orderId: number, status: string) => {
-    await orderService.updateStatus(orderId, status);
-    fetchOrders();
+    try {
+      await orderService.updateStatus(orderId, status);
+      fetchOrders();
+    } catch (err) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to update order status';
+      alert(msg);
+      fetchOrders();
+    }
   };
 
   if (loading) return <LoadingSpinner />;

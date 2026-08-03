@@ -17,7 +17,7 @@ export default function ManageCategories() {
     categoryService.getAll().then((res) => {
       setCategories(res.data);
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   };
 
   useEffect(() => { fetchCategories(); }, []);
@@ -45,8 +45,13 @@ export default function ManageCategories() {
 
   const handleDelete = async (id: number) => {
     if (!confirm('Delete this category?')) return;
-    await categoryService.delete(id);
-    fetchCategories();
+    try {
+      await categoryService.delete(id);
+      fetchCategories();
+    } catch (err) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to delete category';
+      alert(msg);
+    }
   };
 
   if (loading) return <LoadingSpinner />;

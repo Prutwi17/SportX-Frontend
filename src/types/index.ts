@@ -89,6 +89,7 @@ export interface WishlistItem {
   productImage: string;
   price: number;
   discountedPrice: number;
+  stockQuantity: number;
 }
 
 export interface OrderItem {

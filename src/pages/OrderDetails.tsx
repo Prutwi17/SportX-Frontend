@@ -5,6 +5,7 @@ import { ArrowLeft, MapPin, Package, XCircle, BadgePercent } from 'lucide-react'
 import { orderService } from '../services/orderService';
 import type { Order } from '../types';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import ProductImage from '../components/common/ProductImage';
 
 export default function OrderDetails() {
   const { id } = useParams<{ id: string }>();
@@ -27,8 +28,12 @@ export default function OrderDetails() {
 
   const handleCancel = async () => {
     if (!confirm('Cancel this order?')) return;
-    await orderService.cancelOrder(order!.id);
-    fetchOrder();
+    try {
+      await orderService.cancelOrder(order!.id);
+      fetchOrder();
+    } catch (err: unknown) {
+      alert((err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to cancel order');
+    }
   };
 
   if (loading) return <LoadingSpinner />;
@@ -132,11 +137,7 @@ export default function OrderDetails() {
           {order.items.map((item) => (
             <div key={item.id} className="flex gap-4 items-center p-4 bg-slate-50 rounded-2xl">
               <div className="w-16 h-16 rounded-xl overflow-hidden bg-white border border-slate-100 shrink-0">
-                {item.productImage ? (
-                  <img src={item.productImage} alt={item.productName} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-300 text-xs">🏷️</div>
-                )}
+                <ProductImage src={item.productImage} alt={item.productName} className="w-full h-full object-cover" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-display font-semibold text-slate-900 truncate">{item.productName}</p>

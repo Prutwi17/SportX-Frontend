@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Users, Package, ShoppingCart, IndianRupee, Clock, AlertTriangle, ArrowUpRight, ChevronRight } from 'lucide-react';
+import { Users, Package, ShoppingCart, IndianRupee, Clock, AlertTriangle, ArrowUpRight, ChevronRight, RefreshCw } from 'lucide-react';
 import { dashboardService } from '../../services/dashboardService';
 import type { DashboardData } from '../../types';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
@@ -10,15 +10,50 @@ import AdminLayout from '../../components/admin/AdminLayout';
 export default function AdminDashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const loadStats = () => {
+    dashboardService.getStats()
+      .then((res) => {
+        setData(res.data);
+      })
+      .catch(() => {
+        setError('Failed to load dashboard data. Please try again.');
+      })
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    dashboardService.getStats().then((res) => {
-      setData(res.data);
-      setLoading(false);
-    });
+    loadStats();
   }, []);
 
+  const handleRetry = () => {
+    setLoading(true);
+    setError('');
+    loadStats();
+  };
+
   if (loading) return <LoadingSpinner />;
+
+  if (error) {
+    return (
+      <AdminLayout>
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="w-20 h-20 rounded-3xl bg-red-50 flex items-center justify-center mb-5">
+            <AlertTriangle size={36} className="text-red-400" />
+          </div>
+          <p className="font-display text-xl font-bold text-slate-800">{error}</p>
+          <button
+            onClick={handleRetry}
+            className="mt-6 inline-flex items-center gap-2 btn-gradient px-6 py-3 rounded-2xl font-display font-semibold text-sm"
+          >
+            <RefreshCw size={16} />
+            Retry
+          </button>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   const statusColors: Record<string, string> = {
     PENDING: 'bg-yellow-100 text-yellow-800',

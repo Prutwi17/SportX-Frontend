@@ -19,7 +19,7 @@ export default function ManageCoupons() {
     couponService.getAll().then((res) => {
       setCoupons(res.data);
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   };
 
   useEffect(() => { fetchCoupons(); }, []);
@@ -45,8 +45,13 @@ export default function ManageCoupons() {
 
   const handleDelete = async (id: number) => {
     if (!confirm('Delete this coupon?')) return;
-    await couponService.delete(id);
-    fetchCoupons();
+    try {
+      await couponService.delete(id);
+      fetchCoupons();
+    } catch (err) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to delete coupon';
+      alert(msg);
+    }
   };
 
   if (loading) return <LoadingSpinner />;
