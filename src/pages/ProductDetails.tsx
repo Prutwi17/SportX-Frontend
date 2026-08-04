@@ -21,16 +21,30 @@ export default function ProductDetails() {
   const [quantity, setQuantity] = useState(1);
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
   const [addingToCart, setAddingToCart] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (!id) return;
+    let cancelled = false;
     setLoading(true);
     productService.getById(Number(id)).then((res) => {
-      setProduct(res.data);
-      setLoading(false);
+      if (!cancelled) {
+        setProduct(res.data);
+        setLoading(false);
+      }
+    }).catch(() => {
+      if (!cancelled) {
+        setProduct(null);
+        setLoading(false);
+      }
     });
-    reviewService.getProductReviews(Number(id)).then((res) => setReviews(res.data));
+    reviewService.getProductReviews(Number(id)).then((res) => {
+      if (!cancelled) setReviews(res.data);
+    }).catch(() => {});
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   const handleAddToCart = async () => {
@@ -38,6 +52,10 @@ export default function ProductDetails() {
     setAddingToCart(true);
     try {
       await cartService.addItem(product!.id, quantity);
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 1600);
+    } catch {
+      alert('Failed to add to cart');
     } finally {
       setAddingToCart(false);
     }
@@ -212,7 +230,7 @@ export default function ProductDetails() {
               className="btn-gradient flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-display font-bold text-base"
             >
               <ShoppingCart size={18} />
-              {addingToCart ? 'Adding...' : 'Add to Cart'}
+              {addingToCart ? 'Adding...' : addedToCart ? 'Added to Cart!' : 'Add to Cart'}
             </button>
 
             <motion.button

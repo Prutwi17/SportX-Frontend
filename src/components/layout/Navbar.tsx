@@ -81,7 +81,9 @@ export default function Navbar() {
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
       className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled ? 'glass shadow-lg shadow-slate-900/5' : 'bg-white/70 backdrop-blur-md border-b border-slate-100'
+        scrolled
+          ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-lg shadow-slate-900/5 dark:shadow-slate-950/50 border-b border-slate-200/60 dark:border-slate-800'
+          : 'bg-white/70 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -122,12 +124,12 @@ export default function Navbar() {
                 <div className="relative" ref={profileRef}>
                   <button
                     onClick={() => setProfileOpen(!profileOpen)}
-                    className="flex items-center gap-2 ml-1 px-2 py-1.5 rounded-xl hover:bg-slate-100 transition-colors"
+                    className="flex items-center gap-2 ml-1 px-2 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   >
                     <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-500 to-fuchsia-500 flex items-center justify-center text-white font-semibold text-sm shadow-md">
                       {(user?.firstName?.[0] || 'U').toUpperCase()}
                     </div>
-                    <ChevronDown size={15} className={`text-slate-500 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown size={15} className={`text-slate-500 dark:text-slate-400 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   <AnimatePresence>
@@ -137,13 +139,13 @@ export default function Navbar() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.95 }}
                         transition={{ duration: 0.18 }}
-                        className="absolute right-0 mt-2 w-60 glass rounded-2xl shadow-xl shadow-slate-900/10 overflow-hidden"
+                        className="absolute right-0 mt-2 w-60 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-xl shadow-slate-900/10 dark:shadow-slate-950/50 overflow-hidden"
                       >
-                        <div className="px-4 py-3 border-b border-slate-200/60">
-                          <p className="font-display font-semibold text-sm text-slate-900 truncate">
+                        <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
+                          <p className="font-display font-semibold text-sm text-slate-900 dark:text-white truncate">
                             {user?.firstName} {user?.lastName}
                           </p>
-                          <p className="text-xs text-slate-500 truncate">{user?.email}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user?.email}</p>
                         </div>
                         <div className="p-2">
                           <DropdownLink to="/profile" icon={Settings} label="My Profile" onClick={() => setProfileOpen(false)} />
@@ -154,7 +156,7 @@ export default function Navbar() {
                           )}
                           <button
                             onClick={handleLogout}
-                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-colors"
+                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
                           >
                             <LogOut size={17} />
                             Logout
@@ -169,7 +171,7 @@ export default function Navbar() {
               <>
                 <Link
                   to="/login"
-                  className="text-sm font-medium text-slate-700 hover:text-brand-600 px-4 py-2.5 transition-colors"
+                  className="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 px-4 py-2.5 transition-colors"
                 >
                   Login
                 </Link>
@@ -184,7 +186,7 @@ export default function Navbar() {
           </div>
 
           <button
-            className="md:hidden text-slate-700 p-2"
+            className="md:hidden text-slate-700 dark:text-slate-300 p-2"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
@@ -199,7 +201,7 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden glass border-t border-slate-200/60 overflow-hidden"
+            className="md:hidden bg-white/95 dark:bg-slate-900/95 border-t border-slate-200/60 dark:border-slate-800 overflow-hidden"
           >
             <div className="px-4 py-4 flex flex-col gap-1">
               {navLinks.map((link) => (
@@ -222,7 +224,7 @@ export default function Navbar() {
                   <MobileLink to="/register" label="Register" onClick={() => setMobileOpen(false)} />
                 </>
               )}
-              <div className="flex items-center justify-between px-3 pt-2 mt-2 border-t border-slate-200/60">
+              <div className="flex items-center justify-between px-3 pt-2 mt-2 border-t border-slate-200/60 dark:border-slate-800">
                 <span className="text-xs font-semibold text-slate-400">Theme</span>
                 <ThemeToggle />
               </div>
@@ -241,7 +243,7 @@ function NavLink({ to, label }: { to: string; label: string }) {
       to={to}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="relative px-4 py-2 text-sm font-medium text-slate-700 hover:text-brand-600 transition-colors"
+      className="relative px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
     >
       {label}
       <motion.span
@@ -269,7 +271,7 @@ function IconLink({
     <Link
       to={to}
       aria-label={label}
-      className="relative w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:text-brand-600 hover:bg-brand-50 transition-all"
+      className="relative w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-950/40 transition-all"
     >
       <Icon size={20} />
       {count !== undefined && count > 0 && (
@@ -301,7 +303,7 @@ function DropdownLink({
     <Link
       to={to}
       onClick={onClick}
-      className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors"
+      className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
     >
       <Icon size={17} className="text-slate-400" />
       {label}
@@ -311,7 +313,7 @@ function DropdownLink({
 
 function MobileLink({ to, label, onClick }: { to: string; label: string; onClick: () => void }) {
   return (
-    <Link to={to} onClick={onClick} className="px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+    <Link to={to} onClick={onClick} className="px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
       {label}
     </Link>
   );

@@ -25,6 +25,12 @@ export default function Cart() {
 
   useEffect(() => { fetchCart(); }, []);
 
+  useEffect(() => {
+    const onCartUpdated = () => { void fetchCart(); };
+    window.addEventListener('cart-updated', onCartUpdated);
+    return () => window.removeEventListener('cart-updated', onCartUpdated);
+  }, []);
+
   const handleUpdateQuantity = async (itemId: number, quantity: number) => {
     if (quantity < 1) return;
     setUpdatingId(itemId);

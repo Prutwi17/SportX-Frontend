@@ -16,6 +16,8 @@ import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
 import OrderDetails from './pages/OrderDetails';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentFailure from './pages/PaymentFailure';
 import Profile from './pages/Profile';
 import Wishlist from './pages/Wishlist';
 import About from './pages/About';
@@ -49,6 +51,9 @@ export default function App() {
             <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
             <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
             <Route path="/orders/:id" element={<ProtectedRoute><OrderDetails /></ProtectedRoute>} />
+            <Route path="/payment/success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
+            <Route path="/payment/success/:id" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
+            <Route path="/payment/failure" element={<ProtectedRoute><PaymentFailure /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
 

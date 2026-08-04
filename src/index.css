@@ -369,8 +369,6 @@ html.theme-transition *::after {
 .dark .text-slate-500 { color: #94a3b8; }
 .dark .text-slate-400 { color: #94a3b8; }
 .dark .text-slate-300 { color: #cbd5e1; }
-.dark .text-slate-200 { color: #475569; }
-.dark .fill-slate-200 { fill: #475569; }
 .dark .text-brand-700 { color: #c4b5fd; }
 .dark .text-brand-600 { color: #a78bfa; }
 .dark .text-brand-500 { color: #a78bfa; }
@@ -439,4 +437,95 @@ html.theme-transition *::after {
 /* Scrollbar */
 .dark ::-webkit-scrollbar-track {
   background: #0f172a;
+}
+
+/* Buttons */
+.dark .btn-outline {
+  border-color: rgba(139, 92, 246, 0.55);
+  color: #c4b5fd;
+}
+.dark .btn-outline:hover {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: #a78bfa;
+}
+
+/* Form controls */
+.dark select,
+.dark select.input-premium {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border-color: #334155;
+}
+.dark select option {
+  background-color: #1e293b;
+  color: #e2e8f0;
+}
+.dark textarea.input-premium {
+  background: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+/* Dividers & overlays */
+.dark hr,
+.dark .border-slate-100 {
+  border-color: #334155;
+}
+.dark .bg-white\/60 {
+  background-color: rgba(15, 23, 42, 0.75);
+}
+
+/* Text on dark surfaces */
+.dark .text-white {
+  color: #f8fafc;
+}
+.dark .text-red-500 {
+  color: #f87171;
+}
+.dark .text-red-600 {
+  color: #f87171;
+}
+.dark .text-emerald-500 {
+  color: #34d399;
+}
+.dark .text-emerald-600 {
+  color: #34d399;
+}
+
+/* Admin & table surfaces */
+.dark .bg-dark-900 {
+  background-color: #0f172a;
+}
+.dark table {
+  color: #e2e8f0;
+}
+.dark thead {
+  background-color: #1e293b;
+}
+.dark tbody tr {
+  border-color: #334155;
+}
+.dark tbody tr:hover {
+  background-color: rgba(51, 65, 85, 0.35);
+}
+
+/* Page section backgrounds */
+.dark section.bg-white,
+.dark .bg-white.rounded-2xl,
+.dark .bg-white.rounded-3xl,
+.dark .bg-white.rounded-\[32px\] {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+/* Icon visibility */
+.dark .text-slate-400 svg,
+.dark svg.text-slate-400 {
+  color: #94a3b8;
+}
+
+/* Product card equal heights */
+.product-grid {
+  display: grid;
+  align-items: stretch;
 }

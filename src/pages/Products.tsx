@@ -31,7 +31,7 @@ export default function Products() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const params: Record<string, unknown> = { page, size: 8 };
+      const params: Record<string, unknown> = { page, size: 16 };
       if (filters.categoryId) params.categoryId = filters.categoryId;
       if (filters.brandId) params.brandId = filters.brandId;
       if (filters.minPrice) params.minPrice = filters.minPrice;
@@ -40,11 +40,11 @@ export default function Products() {
 
       let res;
       if (search) {
-        res = await productService.search(search, page, 8);
+        res = await productService.search(search, page, 16);
       } else if (Object.values(filters).some(Boolean)) {
         res = await productService.filter(params);
       } else {
-        res = await productService.getAll(page);
+        res = await productService.getAll(page, 16);
       }
       setProducts(res.data);
     } finally {
@@ -126,7 +126,7 @@ export default function Products() {
         animate={{ height: showFilters ? 'auto' : 0, opacity: showFilters ? 1 : 0 }}
         className="overflow-hidden mb-6"
       >
-        <div className="bg-white border border-slate-100 shadow-soft rounded-3xl p-6 mt-4 grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="bg-white border border-slate-100 shadow-soft rounded-3xl p-6 mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <div>
             <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">Category</label>
             <select value={filters.categoryId} onChange={(e) => handleFilterChange('categoryId', e.target.value)}
@@ -185,14 +185,41 @@ export default function Products() {
         </motion.div>
       ) : (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4 mt-8">
+          <div className="flex items-center justify-between mt-8 mb-3">
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+              Showing <span className="font-bold text-slate-700 dark:text-slate-200">{products.content.length}</span> of{' '}
+              <span className="font-bold text-slate-700 dark:text-slate-200">{products.totalElements}</span> products
+            </p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+              Page <span className="font-bold text-slate-700 dark:text-slate-200">{page + 1}</span> of{' '}
+              <span className="font-bold text-slate-700 dark:text-slate-200">{products.totalPages}</span>
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
             {products.content.map((product, i) => (
               <ProductCard key={product.id} product={product} index={i} />
             ))}
           </div>
 
           {products.totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-12">
+            <div className="flex justify-center items-center gap-2 mt-12">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() =>
+                  setSearchParams((prev) => {
+                    const next = new URLSearchParams(prev);
+                    next.set('page', String(page - 1));
+                    return next;
+                  })
+                }
+                disabled={page === 0}
+                aria-label="Previous page"
+                className="w-10 h-10 rounded-xl font-display font-semibold transition-all bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                ‹
+              </motion.button>
               {Array.from({ length: products.totalPages }, (_, i) => (
                 <motion.button
                   key={i}
@@ -214,6 +241,22 @@ export default function Products() {
                   {i + 1}
                 </motion.button>
               ))}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() =>
+                  setSearchParams((prev) => {
+                    const next = new URLSearchParams(prev);
+                    next.set('page', String(page + 1));
+                    return next;
+                  })
+                }
+                disabled={products.last}
+                aria-label="Next page"
+                className="w-10 h-10 rounded-xl font-display font-semibold transition-all bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                ›
+              </motion.button>
             </div>
           )}
         </>
