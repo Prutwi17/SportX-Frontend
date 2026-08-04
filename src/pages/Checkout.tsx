@@ -86,7 +86,7 @@ export default function Checkout() {
           setCart(null);
           notifyCartUpdated();
           setShowPaymentModal(false);
-          navigate('/', { replace: true });
+          navigate(`/payment/success/${pData.orderId}`, { replace: true });
         } catch (err: unknown) {
           const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Payment verification failed';
           setShowPaymentModal(false);
@@ -160,7 +160,7 @@ export default function Checkout() {
       setCart(null);
       notifyCartUpdated();
       setShowPaymentModal(false);
-      navigate('/', { replace: true });
+      navigate(`/payment/success/${paymentData.orderId}`, { replace: true });
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Payment verification failed';
       setShowPaymentModal(false);
@@ -248,11 +248,11 @@ export default function Checkout() {
               )}
             </div>
 
-            {/* OR Divider Badge with High Contrast */}
+            {/* Payment Divider Badge */}
             <div className="relative flex items-center justify-center my-3">
               <div className="w-full border-t border-slate-300 dark:border-slate-700"></div>
               <span className="absolute bg-slate-100 dark:bg-slate-800 px-4 py-1 text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-widest border border-slate-300 dark:border-slate-700 rounded-full shadow-sm">
-                OR
+                PAYMENT
               </span>
             </div>
 

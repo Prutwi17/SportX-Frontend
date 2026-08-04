@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CheckCircle2, ShoppingBag, Package, Calendar, DollarSign, ArrowRight, ShieldCheck, Truck, Clock, Hash } from 'lucide-react';
+import { CheckCircle2, ShoppingBag, Package, Calendar, DollarSign, ArrowRight, ShieldCheck, Truck, Clock, Hash, Home } from 'lucide-react';
 import { orderService } from '../services/orderService';
 import type { Order } from '../types';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -67,7 +67,7 @@ export default function PaymentSuccess() {
           </span>
 
           <h1 className="font-display text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            {isCOD ? 'Order Confirmed' : 'Payment Successful!'}
+            Order Confirmed
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-base md:text-lg mt-2 max-w-md mx-auto">
             {isCOD
@@ -155,8 +155,18 @@ export default function PaymentSuccess() {
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => navigate('/orders')}
+              onClick={() => navigate('/')}
               className="btn-gradient w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-2xl font-display font-bold text-sm shadow-lg shadow-brand-500/25"
+            >
+              <Home size={17} />
+              Return to Home
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => navigate('/orders')}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 px-7 py-3.5 rounded-2xl font-display font-bold text-sm transition-colors"
             >
               <Package size={17} />
               View Orders
