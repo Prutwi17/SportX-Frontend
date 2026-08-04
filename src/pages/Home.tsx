@@ -140,7 +140,7 @@ export default function Home() {
                 transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}
                 className="absolute -left-8 top-16 glass rounded-2xl px-5 py-4 shadow-xl"
               >
-                <p className="flex items-center gap-2 font-display font-bold text-white-900 text-lg">
+                <p className="flex items-center gap-2 font-display font-bold text-white text-lg">
                   <Trophy size={18} className="text-accent-500" />
                   #1 Sports Store
                 </p>
@@ -157,7 +157,7 @@ export default function Home() {
                     <Star key={s} size={13} className="fill-current" />
                   ))}
                 </p>
-                <p className="font-display font-bold text-white-900 text-sm mt-1">4.9/5 Rating</p>
+                <p className="font-display font-bold text-white text-sm mt-1">4.9/5 Rating</p>
                 <p className="text-xs text-slate-500">2,400+ reviews</p>
               </motion.div>
             </motion.div>

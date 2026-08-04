@@ -96,14 +96,34 @@ export interface OrderItem {
   id: number;
   productId: number;
   productName: string;
+  productDescription?: string;
+  categoryName?: string;
   productImage: string;
   quantity: number;
   price: number;
   subtotal: number;
 }
 
+export interface PaymentDTO {
+  id: number;
+  orderId: number;
+  orderNumber?: string;
+  paymentMethod: string;
+  status: string;
+  amount: number;
+  currency?: string;
+  transactionId?: string;
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
+  keyId?: string;
+  verified?: boolean;
+  message?: string;
+  paidAt?: string;
+}
+
 export interface Order {
   id: number;
+  userId?: number;
   orderNumber: string;
   subtotal: number;
   shippingCost: number;
@@ -112,6 +132,8 @@ export interface Order {
   total: number;
   status: string;
   paymentMethod: string;
+  paymentStatus?: string;
+  transactionId?: string;
   couponCode: string;
   notes: string;
   createdAt: string;

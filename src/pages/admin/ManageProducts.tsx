@@ -38,6 +38,10 @@ export default function ManageProducts() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    const parsedImages = form.imageUrls
+      ? form.imageUrls.split(',').map((s) => s.trim()).filter(Boolean)
+      : undefined;
+
     const data = {
       name: form.name,
       description: form.description,
@@ -46,14 +50,16 @@ export default function ManageProducts() {
       stockQuantity: Number(form.stockQuantity),
       categoryId: Number(form.categoryId),
       brandId: Number(form.brandId),
-      imageUrls: form.imageUrls ? form.imageUrls.split(',').map((s) => s.trim()) : [],
+      imageUrls: parsedImages && parsedImages.length > 0 ? parsedImages : (editingId ? undefined : []),
     };
 
     try {
       if (editingId) {
         await productService.update(editingId, data as unknown as Record<string, unknown>);
+        alert('Product updated successfully!');
       } else {
         await productService.create(data as unknown as Record<string, unknown>);
+        alert('Product created successfully!');
       }
       setShowForm(false);
       setEditingId(null);
