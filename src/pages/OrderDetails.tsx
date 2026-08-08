@@ -42,8 +42,8 @@ export default function OrderDetails() {
   const statusColors: Record<string, { bg: string; dot: string }> = {
     PENDING: { bg: 'bg-yellow-100 text-yellow-800', dot: 'bg-yellow-500' },
     CONFIRMED: { bg: 'bg-blue-100 text-blue-800', dot: 'bg-blue-500' },
-    PACKED: { bg: 'bg-indigo-100 text-indigo-800', dot: 'bg-indigo-500' },
-    SHIPPED: { bg: 'bg-purple-100 text-purple-800', dot: 'bg-purple-500' },
+    PACKED: { bg: 'bg-brand-100 text-brand-700', dot: 'bg-brand-500' },
+    SHIPPED: { bg: 'bg-brand-100 text-brand-700', dot: 'bg-brand-500' },
     OUT_FOR_DELIVERY: { bg: 'bg-orange-100 text-orange-800', dot: 'bg-orange-500' },
     DELIVERED: { bg: 'bg-green-100 text-green-800', dot: 'bg-green-500' },
     CANCELLED: { bg: 'bg-red-100 text-red-800', dot: 'bg-red-500' },
@@ -88,7 +88,7 @@ export default function OrderDetails() {
         {/* Address */}
         <div className="bg-white rounded-3xl border border-slate-100 shadow-soft p-7">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-fuchsia-500 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
               <MapPin size={17} className="text-white" />
             </div>
             <h2 className="font-display text-lg font-extrabold text-slate-900">Shipping Address</h2>
@@ -104,7 +104,7 @@ export default function OrderDetails() {
         {/* Summary */}
         <div className="bg-white rounded-3xl border border-slate-100 shadow-soft p-7">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent-500 to-orange-400 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
               <BadgePercent size={17} className="text-white" />
             </div>
             <h2 className="font-display text-lg font-extrabold text-slate-900">Payment Summary</h2>

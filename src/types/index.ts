@@ -63,6 +63,7 @@ export interface Product {
   ratingCount: number;
   imageUrls: string[];
   primaryImage: string;
+  createdAt?: string;
 }
 
 export interface CartItem {
@@ -173,6 +174,78 @@ export interface DashboardData {
   pendingOrders: number;
   lowStockProducts: number;
   recentOrders: Order[];
+  todayRevenue: number;
+  monthlyRevenue: number;
+  yearlyRevenue: number;
+  completedOrders: number;
+  cancelledOrders: number;
+  totalCustomers: number;
+  outOfStockProducts: number;
+  averageOrderValue: number;
+  topSellingProducts: TopProduct[];
+  categoryDistribution: NameValue[];
+  orderTrend: ChartPoint[];
+  revenueTrend: ChartPoint[];
+}
+
+export interface ChartPoint {
+  label: string;
+  value: number;
+}
+
+export interface NameValue {
+  name: string;
+  value: number;
+}
+
+export interface TopProduct {
+  productId: number;
+  name: string;
+  image: string;
+  quantitySold: number;
+  revenue: number;
+}
+
+export interface ReportsData {
+  todayRevenue: number;
+  todayOrders: number;
+  monthlyRevenue: number;
+  monthlyOrders: number;
+  yearlyRevenue: number;
+  yearlyOrders: number;
+  totalRevenue: number;
+  totalOrders: number;
+  completedOrders: number;
+  pendingOrders: number;
+  cancelledOrders: number;
+  totalCustomers: number;
+  totalProducts: number;
+  lowStockProducts: number;
+  outOfStockProducts: number;
+  averageOrderValue: number;
+  bestSellingBrand: string;
+  revenueByDay: ChartPoint[];
+  revenueByMonth: ChartPoint[];
+  orderByDay: ChartPoint[];
+  orderByMonth: ChartPoint[];
+  categoryDistribution: NameValue[];
+  topCategories: NameValue[];
+  topProducts: TopProduct[];
+  recentSales: Order[];
+}
+
+export interface AdminUser {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  role: string;
+  profileImage: string;
+  enabled: boolean;
+  createdAt: string;
+  totalOrders: number;
+  totalSpending: number;
 }
 
 export interface PagedResponse<T> {

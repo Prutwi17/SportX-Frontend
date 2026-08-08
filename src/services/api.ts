@@ -20,7 +20,8 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !isLoginRequest) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      const inAdmin = window.location.pathname.startsWith('/admin');
+      window.location.href = inAdmin ? '/admin/login' : '/login';
     }
     return Promise.reject(error);
   }

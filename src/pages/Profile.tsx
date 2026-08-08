@@ -105,7 +105,7 @@ export default function Profile() {
       <div className="bg-dark-900 rounded-3xl p-8 mt-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-brand-600/25 rounded-full blur-3xl" />
         <div className="relative flex items-center gap-5">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-fuchsia-500 flex items-center justify-center text-white font-display text-2xl font-extrabold shadow-lg shadow-brand-500/30">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white font-display text-2xl font-extrabold shadow-lg shadow-brand-500/30">
             {profile?.firstName?.charAt(0)?.toUpperCase()}{profile?.lastName?.charAt(0)?.toUpperCase()}
           </div>
           <div>
@@ -125,7 +125,7 @@ export default function Profile() {
       <div className="bg-white rounded-3xl border border-slate-100 shadow-soft p-7 mt-6">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-fuchsia-500 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
               <UserIcon size={17} className="text-white" />
             </div>
             <h3 className="font-display text-lg font-extrabold text-slate-900">Personal Information</h3>
@@ -154,7 +154,7 @@ export default function Profile() {
               <label className={labelClass}>Phone</label>
               <input value={form.phone} onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))} className={inputClass} />
             </div>
-            <button type="submit" className="btn-gradient px-6 py-3 rounded-2xl font-display font-semibold text-sm">
+            <button type="submit" className="btn-accent px-6 py-3 rounded-xl font-display font-semibold text-sm uppercase tracking-wide">
               Save Changes
             </button>
           </form>
@@ -195,7 +195,7 @@ export default function Profile() {
       {/* Password */}
       <div className="bg-white rounded-3xl border border-slate-100 shadow-soft p-7 mt-6">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent-500 to-orange-400 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
             <Lock size={17} className="text-white" />
           </div>
           <h3 className="font-display text-lg font-extrabold text-slate-900">Change Password</h3>
@@ -209,7 +209,7 @@ export default function Profile() {
             <label className={labelClass}>New Password</label>
             <input type="password" value={passwordForm.newPassword} onChange={(e) => setPasswordForm((p) => ({ ...p, newPassword: e.target.value }))} className={inputClass} required minLength={6} />
           </div>
-          <button type="submit" className="btn-gradient px-6 py-3 rounded-2xl font-display font-semibold text-sm">
+          <button type="submit" className="btn-accent px-6 py-3 rounded-xl font-display font-semibold text-sm uppercase tracking-wide">
             Change Password
           </button>
         </form>
@@ -276,7 +276,7 @@ export default function Profile() {
               <input type="checkbox" checked={addressForm.isDefault} onChange={(e) => setAddressForm((p) => ({ ...p, isDefault: e.target.checked }))} className="w-4 h-4 accent-brand-600" />
               Set as default address
             </label>
-            <button type="submit" className="btn-gradient px-6 py-3 rounded-2xl font-display font-semibold text-sm">
+            <button type="submit" className="btn-accent px-6 py-3 rounded-xl font-display font-semibold text-sm uppercase tracking-wide">
               Save Address
             </button>
           </form>

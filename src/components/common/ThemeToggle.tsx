@@ -15,23 +15,13 @@ export default function ThemeToggle({ className = '' }: Props) {
       type="button"
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-      className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-sm ${
+      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shrink-0 ${className} ${
         isDark
-          ? 'bg-slate-800 text-yellow-300 border border-slate-700 hover:bg-slate-700'
-          : 'bg-slate-100 text-slate-800 border border-slate-200 hover:bg-slate-200'
-      } ${className}`}
+          ? 'bg-white/10 text-brand-400 hover:bg-white/20 border border-white/10'
+          : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+      }`}
     >
-      {isDark ? (
-        <>
-          <Sun size={15} className="text-yellow-400 shrink-0" />
-          <span className="text-white font-semibold">Light</span>
-        </>
-      ) : (
-        <>
-          <Moon size={15} className="text-slate-700 shrink-0" />
-          <span className="text-slate-800 font-semibold">Dark</span>
-        </>
-      )}
+      {isDark ? <Sun size={18} /> : <Moon size={18} />}
     </button>
   );
 }

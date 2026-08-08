@@ -113,7 +113,7 @@ export default function About() {
                   whileHover={{ y: -6 }}
                   className="bg-white rounded-3xl border border-slate-100 shadow-soft hover:shadow-premium p-6 transition-all"
                 >
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500 to-fuchsia-500 flex items-center justify-center mb-4">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center mb-4">
                     <c.icon size={20} className="text-white" />
                   </div>
                   <h3 className="font-display font-bold text-slate-900">{c.title}</h3>
@@ -130,9 +130,9 @@ export default function About() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { icon: Target, title: 'Our Mission', desc: 'Empower every athlete with the best equipment', color: 'from-brand-500 to-purple-500' },
-              { icon: Eye, title: 'Our Vision', desc: 'Be the most trusted sports equipment platform', color: 'from-accent-500 to-orange-400' },
-              { icon: Heart, title: 'Our Values', desc: 'Quality, authenticity, and customer satisfaction', color: 'from-emerald-500 to-teal-400' },
+              { icon: Target, title: 'Our Mission', desc: 'Empower every athlete with the best equipment', color: 'from-brand-500 to-brand-700' },
+              { icon: Eye, title: 'Our Vision', desc: 'Be the most trusted sports equipment platform', color: 'from-brand-500 to-brand-700' },
+              { icon: Heart, title: 'Our Values', desc: 'Quality, authenticity, and customer satisfaction', color: 'from-slate-700 to-slate-900' },
             ].map((v, i) => (
               <motion.div
                 key={v.title}

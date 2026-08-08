@@ -25,4 +25,7 @@ export const productService = {
 
   getByBrand: (brandId: number, page = 0, size = 10) =>
     api.get<PagedResponse<Product>>(`/products/brand/${brandId}`, { params: { page, size } }),
+
+  adminList: (params: Record<string, unknown>) =>
+    api.get<PagedResponse<Product>>('/admin/products', { params }),
 };

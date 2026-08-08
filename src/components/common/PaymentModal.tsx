@@ -100,7 +100,7 @@ export default function PaymentModal({
             </button>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-500 to-fuchsia-500 flex items-center justify-center font-display font-extrabold text-white text-xl shadow-lg shadow-brand-500/30">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-500 to-brand-700 flex items-center justify-center font-display font-extrabold text-white text-xl shadow-lg shadow-brand-500/30">
                   SX
                 </div>
                 <div>
@@ -343,7 +343,7 @@ export default function PaymentModal({
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleStartPayment}
-                    className="btn-gradient w-full py-3.5 rounded-2xl font-display font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-brand-500/25"
+                    className="btn-accent w-full py-3.5 rounded-xl font-display font-bold text-sm uppercase tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-brand-500/25"
                   >
                     Pay ₹{amount.toLocaleString('en-IN')}
                     <ArrowRight size={16} />

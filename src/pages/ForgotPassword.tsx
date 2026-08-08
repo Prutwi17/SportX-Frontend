@@ -71,7 +71,7 @@ export default function ForgotPassword() {
         className="relative z-10 w-full max-w-md bg-white rounded-3xl shadow-premium p-8 md:p-10"
       >
         <div className="flex items-center gap-2 mb-8">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-500 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-brand-500/25">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/25">
             <Zap size={20} className="text-white" />
           </div>
           <span className="font-display text-2xl font-extrabold text-slate-900">
@@ -111,7 +111,7 @@ export default function ForgotPassword() {
                 </div>
               </div>
 
-              <button type="submit" disabled={loading} className="btn-gradient w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-display font-bold text-base">
+              <button type="submit" disabled={loading} className="btn-accent w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-display font-bold text-sm uppercase tracking-wide">
                 {loading ? 'Sending...' : 'Send Reset Link'}
                 {!loading && <ArrowRight size={17} />}
               </button>
@@ -173,7 +173,7 @@ export default function ForgotPassword() {
                 />
               </div>
 
-              <button type="submit" disabled={loading} className="btn-gradient w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-display font-bold text-base">
+              <button type="submit" disabled={loading} className="btn-accent w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-display font-bold text-sm uppercase tracking-wide">
                 {loading ? 'Resetting...' : 'Reset Password'}
                 {!loading && <ArrowRight size={17} />}
               </button>
@@ -190,7 +190,7 @@ export default function ForgotPassword() {
             <p className="text-slate-500 mb-8">Your password has been reset successfully. You can now log in.</p>
             <button
               onClick={() => navigate('/login')}
-              className="btn-gradient w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-display font-bold text-base"
+              className="btn-accent w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-display font-bold text-sm uppercase tracking-wide"
             >
               Back to Login
               <ArrowRight size={17} />

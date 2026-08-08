@@ -19,4 +19,6 @@ export const orderService = {
 
   updateStatus: (id: number, status: string) =>
     api.put<Order>(`/orders/${id}/status`, { status }),
+
+  deleteOrder: (id: number) => api.delete(`/orders/${id}`),
 };

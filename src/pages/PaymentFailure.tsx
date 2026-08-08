@@ -52,7 +52,7 @@ export default function PaymentFailure() {
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => navigate('/checkout')}
-              className="btn-gradient w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-2xl font-display font-bold text-sm shadow-lg shadow-brand-500/25"
+              className="btn-accent w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-display font-bold text-sm uppercase tracking-wide"
             >
               <RefreshCw size={17} />
               Retry Payment
