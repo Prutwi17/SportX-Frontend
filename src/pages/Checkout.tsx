@@ -111,7 +111,7 @@ export default function Checkout() {
             contact: selectedAddress ? selectedAddress.phone : '',
           },
           theme: {
-            color: '#6366f1',
+            color: '#3399cc',
           },
           handler: function (response: { razorpay_payment_id?: string; razorpay_order_id?: string; razorpay_signature?: string }) {
             void completePayment(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature);
@@ -198,7 +198,7 @@ export default function Checkout() {
             {/* Address Card */}
             <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-soft p-7">
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-fuchsia-500 flex items-center justify-center shadow-md">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-md">
                   <MapPin size={17} className="text-white" />
                 </div>
                 <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-white">Shipping Address</h2>
@@ -259,7 +259,7 @@ export default function Checkout() {
             {/* Payment Method - Razorpay ONLY */}
             <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-soft p-7">
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent-500 to-orange-400 flex items-center justify-center shadow-md">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-md">
                   <CreditCard size={17} className="text-white" />
                 </div>
                 <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-white">Payment Gateway</h2>
@@ -341,7 +341,7 @@ export default function Checkout() {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={placing || !selectedAddressId}
-              className="btn-gradient w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl font-display font-bold disabled:opacity-50"
+              className="btn-accent w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-xl font-display font-bold text-sm uppercase tracking-wide disabled:opacity-50"
             >
               {placing ? 'Initializing Razorpay...' : 'Pay with Razorpay'}
               {!placing && <ArrowRight size={17} />}

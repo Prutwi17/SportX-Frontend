@@ -75,7 +75,7 @@ export default function Contact() {
                   whileHover={{ x: 4 }}
                   className="flex items-center gap-5 bg-white rounded-3xl border border-slate-100 shadow-soft hover:shadow-premium p-6 transition-all"
                 >
-                  <div className="w-13 h-13 shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
+                  <div className="w-13 h-13 shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/20">
                     <c.icon size={21} className="text-white" />
                   </div>
                   <div>
@@ -107,7 +107,7 @@ export default function Contact() {
             ) : (
               <>
                 <div className="flex items-center gap-3 mb-7">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-fuchsia-500 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
                     <MessageSquare size={19} className="text-white" />
                   </div>
                   <h2 className="font-display text-xl font-extrabold text-slate-900">Send us a message</h2>
@@ -149,7 +149,7 @@ export default function Contact() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     type="submit"
-                    className="btn-gradient w-full inline-flex items-center justify-center gap-2 py-4 rounded-2xl font-display font-bold"
+                    className="btn-accent w-full inline-flex items-center justify-center gap-2 py-4 rounded-xl font-display font-bold text-sm uppercase tracking-wide"
                   >
                     Send Message
                     <Send size={16} />

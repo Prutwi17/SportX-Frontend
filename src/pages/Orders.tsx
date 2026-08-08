@@ -36,7 +36,7 @@ export default function Orders() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
       <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-3 mb-10">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-brand-500/25">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/25">
           <Package size={22} className="text-white" />
         </div>
         <div>
@@ -52,7 +52,7 @@ export default function Orders() {
           </div>
           <h2 className="font-display text-2xl font-extrabold text-slate-900 dark:text-white mb-3">No orders yet</h2>
           <p className="text-slate-500 dark:text-slate-400 mb-8">When you place an order, it will appear here.</p>
-          <Link to="/products" className="btn-gradient inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl font-display font-bold">
+          <Link to="/products" className="btn-accent inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-display font-bold text-sm uppercase tracking-wide">
             Start Shopping
             <ArrowRight size={17} />
           </Link>
@@ -180,7 +180,7 @@ export default function Orders() {
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setPage(i)}
                   className={`w-10 h-10 rounded-xl font-display font-semibold transition-all ${
-                    i === page ? 'btn-gradient shadow-lg' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50'
+                    i === page ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/30' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50'
                   }`}
                 >
                   {i + 1}

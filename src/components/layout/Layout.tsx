@@ -8,7 +8,7 @@ export default function Layout() {
   const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen overflow-x-hidden">
       {!isAdminRoute && <Navbar />}
       <main className="flex-1">
         <AnimatePresence mode="wait">
