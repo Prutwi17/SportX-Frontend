@@ -75,7 +75,7 @@ export default function Contact() {
                   whileHover={{ x: 4 }}
                   className="flex items-center gap-5 bg-white rounded-3xl border border-slate-100 shadow-soft hover:shadow-premium p-6 transition-all"
                 >
-                  <div className="w-13 h-13 shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/20">
+                  <div className="w-12 h-12 shrink-0 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/20">
                     <c.icon size={21} className="text-white" />
                   </div>
                   <div>

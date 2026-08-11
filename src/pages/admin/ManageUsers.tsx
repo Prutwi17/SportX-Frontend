@@ -58,6 +58,10 @@ export default function ManageUsers() {
   const [toggleTarget, setToggleTarget] = useState<AdminUser | null>(null);
   const [toggleBusy, setToggleBusy] = useState(false);
 
+  const customers = data?.content.filter((u) => u.role === 'ROLE_CUSTOMER').length ?? 0;
+  const admins = data?.content.filter((u) => u.role === 'ROLE_ADMIN').length ?? 0;
+  const activeUsers = data?.content.filter((u) => u.enabled).length ?? 0;
+
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setToastType(type);
     setToast(msg);
@@ -200,23 +204,23 @@ export default function ManageUsers() {
       <Toast message={toast} type={toastType} />
 
       {/* Header & Page Action */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 pb-4 border-b border-slate-200/80 dark:border-white/10">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-[#ff6a00] flex items-center justify-center shadow-lg shadow-orange-500/20 text-white">
-            <Users size={22} />
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#ff6a00] to-amber-600 flex items-center justify-center shadow-md text-white shrink-0">
+            <Users size={20} />
           </div>
           <div>
-            <h1 className="font-display text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white">
-              User Directory
+            <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+              Users
             </h1>
-            <p className="text-slate-500 text-sm">
-              Manage registered customers, admin privileges and account access
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              Manage registered customer accounts, roles and security privileges
             </p>
           </div>
         </div>
 
         {/* View Mode Toggle Switch */}
-        <div className="flex items-center bg-slate-200/80 dark:bg-white/10 p-1 rounded-xl">
+        <div className="flex items-center bg-slate-200/80 dark:bg-white/10 p-1 rounded-xl shrink-0">
           <button
             onClick={() => setViewMode('grid')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
@@ -258,7 +262,7 @@ export default function ManageUsers() {
           </div>
           <div>
             <p className="text-xs font-semibold text-slate-400">Customers</p>
-            <p className="text-xl font-extrabold text-slate-900 dark:text-white">Active</p>
+            <p className="text-xl font-extrabold text-slate-900 dark:text-white">{customers}</p>
           </div>
         </div>
 
@@ -268,7 +272,7 @@ export default function ManageUsers() {
           </div>
           <div>
             <p className="text-xs font-semibold text-slate-400">Admins</p>
-            <p className="text-xl font-extrabold text-slate-900 dark:text-white">Secured</p>
+            <p className="text-xl font-extrabold text-slate-900 dark:text-white">{admins}</p>
           </div>
         </div>
 
@@ -277,8 +281,8 @@ export default function ManageUsers() {
             <ShieldCheck size={20} />
           </div>
           <div>
-            <p className="text-xs font-semibold text-slate-400">Status</p>
-            <p className="text-sm font-extrabold text-emerald-600">All Verified</p>
+            <p className="text-xs font-semibold text-slate-400">Active Accounts</p>
+            <p className="text-xl font-extrabold text-slate-900 dark:text-white">{activeUsers}</p>
           </div>
         </div>
       </div>

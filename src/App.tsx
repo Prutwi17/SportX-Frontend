@@ -23,6 +23,7 @@ import Wishlist from './pages/Wishlist';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Unauthorized from './pages/Unauthorized';
+import NotFound from './pages/NotFound';
 
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/Dashboard';
@@ -73,6 +74,7 @@ export default function App() {
               <Route path="/admin/coupons" element={<AdminRoute><ManageCoupons /></AdminRoute>} />
               <Route path="/admin/users" element={<AdminRoute><ManageUsers /></AdminRoute>} />
               <Route path="/admin/analytics" element={<AdminRoute><Analytics /></AdminRoute>} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </WishlistProvider>
         </AuthProvider>

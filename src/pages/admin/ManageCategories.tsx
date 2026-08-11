@@ -108,21 +108,25 @@ export default function ManageCategories() {
     <AdminLayout>
       <Toast message={toast} type={toastType} />
 
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 pb-4 border-b border-slate-200/80 dark:border-white/10">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-slate-900 flex items-center justify-center shadow-lg shadow-slate-900/10">
-            <FolderOpen size={20} className="text-white" />
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#ff6a00] to-amber-600 flex items-center justify-center shadow-md text-white shrink-0">
+            <FolderOpen size={20} />
           </div>
           <div>
-            <h1 className="font-display text-2xl font-extrabold text-slate-900">Manage Categories</h1>
-            <p className="text-slate-500 text-sm">Organize your store by sport</p>
+            <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Categories</h1>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Organize product catalog by sports category</p>
           </div>
         </div>
         <button
           onClick={() => { setShowForm(!showForm); setEditing(null); setForm({ name: '', description: '', imageUrl: '' }); setFormError(''); }}
-          className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl font-display font-bold text-sm uppercase tracking-wide transition-all ${showForm ? 'bg-white border-2 border-slate-200 text-slate-700 hover:bg-slate-50' : 'btn-accent shadow-lg'}`}
+          className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-display font-bold text-xs uppercase tracking-wider transition-all shrink-0 ${
+            showForm
+              ? 'bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 hover:bg-slate-50'
+              : 'bg-[#ff6a00] text-white hover:bg-[#ea580c] shadow-lg shadow-orange-500/25'
+          }`}
         >
-          {showForm ? 'Cancel' : <><Plus size={16} /> Add Category</>}
+          {showForm ? 'Cancel' : <><Plus size={15} /> Add Category</>}
         </button>
       </div>
 
@@ -131,9 +135,12 @@ export default function ManageCategories() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           onSubmit={handleSubmit}
-          className="admin-card p-7 mb-8 max-w-2xl"
+          className="admin-card p-6 mb-8 max-w-2xl border-2 border-[#ff6a00]/30"
         >
-          <h2 className="font-display text-lg font-extrabold text-slate-900 mb-5">{editing ? 'Edit' : 'New'} Category</h2>
+          <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
+            <FolderOpen size={18} className="text-[#ff6a00]" />
+            {editing ? 'Edit Category' : 'Create New Category'}
+          </h2>
           {formError && (
             <div className="flex items-center gap-2 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl text-sm mb-4">
               <AlertCircle size={15} className="shrink-0" /> {formError}
@@ -146,7 +153,7 @@ export default function ManageCategories() {
             </div>
             <div>
               <label className={labelClass}>Description</label>
-              <textarea value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} className={inputClass} placeholder="Short description of this category" />
+              <textarea value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} className={inputClass} placeholder="Short description of this category" rows={3} />
             </div>
             <div>
               <label className={labelClass}>Image URL</label>
@@ -154,10 +161,10 @@ export default function ManageCategories() {
             </div>
           </div>
           <div className="flex gap-3 mt-6">
-            <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-600 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+            <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="px-6 py-3 rounded-xl font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-white/10 hover:bg-slate-200">
               Cancel
             </button>
-            <button type="submit" disabled={saving} className={`flex-1 btn-accent px-6 py-3 rounded-2xl font-display font-semibold text-sm uppercase tracking-wide ${saving ? 'opacity-60 cursor-not-allowed' : ''}`}>
+            <button type="submit" disabled={saving} className={`bg-[#ff6a00] hover:bg-[#ea580c] text-white px-8 py-3 rounded-xl font-display font-bold text-sm uppercase tracking-wide shadow-lg shadow-orange-500/25 ${saving ? 'opacity-60 cursor-not-allowed' : ''}`}>
               {saving ? 'Saving...' : editing ? 'Update Category' : 'Create Category'}
             </button>
           </div>
@@ -184,34 +191,34 @@ export default function ManageCategories() {
               </tr>
             )}
             {categories.map((cat) => (
-              <tr key={cat.id} className="border-b border-slate-50 hover:bg-slate-50/70 transition-colors">
+              <tr key={cat.id} className="border-b border-slate-50 dark:border-white/5 hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors">
                 <td>
                   <div className="flex items-center gap-3 min-w-0">
                     {cat.imageUrl ? (
                       <img src={cat.imageUrl} alt={cat.name} className="h-10 w-10 rounded-xl object-cover shrink-0" loading="lazy" />
                     ) : (
-                      <div className="h-10 w-10 rounded-xl bg-brand-50 dark:bg-white/5 flex items-center justify-center shrink-0">
-                        <FolderOpen size={16} className="text-brand-600" />
+                      <div className="h-10 w-10 rounded-xl bg-orange-50 dark:bg-orange-950/40 flex items-center justify-center shrink-0">
+                        <FolderOpen size={16} className="text-[#ff6a00]" />
                       </div>
                     )}
-                    <span className="font-semibold text-slate-800 truncate">{cat.name}</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-100 truncate">{cat.name}</span>
                   </div>
                 </td>
-                <td className="hidden sm:table-cell text-sm text-slate-500">
+                <td className="hidden sm:table-cell text-sm text-slate-500 dark:text-slate-400">
                   <span className="block max-w-[320px] truncate">{cat.description || '—'}</span>
                 </td>
                 <td>
-                  <span className="admin-badge bg-brand-50 text-brand-700 dark:bg-white/10">{cat.productCount}</span>
+                  <span className="admin-badge bg-orange-50 dark:bg-orange-950/40 text-[#ff6a00] font-bold">{cat.productCount}</span>
                 </td>
                 <td className="admin-td-right">
                   <div className="flex items-center justify-end gap-1.5">
-                    <a href={`/products?categoryId=${cat.id}`} target="_blank" rel="noreferrer" className="admin-action text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/10" title="View products in this category">
+                    <a href={`/products?q=${encodeURIComponent(cat.name)}`} target="_blank" rel="noreferrer" className="admin-action text-slate-600 dark:text-slate-300" title="View products in this category">
                       <Eye size={13} /> View
                     </a>
-                    <button onClick={() => handleEdit(cat)} className="admin-action text-brand-600 hover:bg-brand-50 hover:text-brand-700 dark:hover:bg-white/10">
+                    <button onClick={() => handleEdit(cat)} className="admin-action text-[#ff6a00]" title="Edit category">
                       <Pencil size={13} /> Edit
                     </button>
-                    <button onClick={() => setDeleteTarget(cat)} className="admin-action text-red-500 hover:bg-red-50 hover:text-red-700 dark:hover:bg-white/10">
+                    <button onClick={() => setDeleteTarget(cat)} className="admin-action text-red-500" title="Delete category">
                       <Trash2 size={13} /> Delete
                     </button>
                   </div>

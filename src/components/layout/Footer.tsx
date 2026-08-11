@@ -94,15 +94,12 @@ export default function Footer() {
             </p>
             <div className="flex gap-2.5">
               {[Globe, MessageCircle, AtSign, Rss].map((Icon, i) => (
-                <motion.a
+                <span
                   key={i}
-                  href="#"
-                  onClick={(e) => e.preventDefault()}
-                  whileHover={{ y: -3, scale: 1.05 }}
-                  className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-brand-600 hover:border-brand-600 transition-all"
+                  className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400"
                 >
                   <Icon size={15} />
-                </motion.a>
+                </span>
               ))}
             </div>
           </motion.div>
@@ -191,9 +188,9 @@ export default function Footer() {
             ))}
           </div>
           <div className="flex gap-5 text-xs text-slate-500 items-center">
-            <span className="hover:text-white cursor-pointer transition-colors">Privacy</span>
-            <span className="hover:text-white cursor-pointer transition-colors">Terms</span>
-            <span className="hover:text-white cursor-pointer transition-colors">Returns</span>
+            <span className="transition-colors">Privacy</span>
+            <span className="transition-colors">Terms</span>
+            <span className="transition-colors">Returns</span>
             <Link
               to="/admin/login"
               className="inline-flex items-center gap-1.5 font-semibold text-slate-500 hover:text-brand-400 transition-colors"

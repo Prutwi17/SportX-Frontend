@@ -29,6 +29,7 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import LineChart from '../../components/admin/LineChart';
 import BarChart from '../../components/admin/BarChart';
 import DonutChart from '../../components/admin/DonutChart';
+import ProductImage from '../../components/common/ProductImage';
 
 const inr = (v: number) => `₹${(v || 0).toLocaleString('en-IN')}`;
 
@@ -40,6 +41,7 @@ const statusColors: Record<string, string> = {
   OUT_FOR_DELIVERY: 'bg-orange-100 text-orange-800',
   DELIVERED: 'bg-green-100 text-green-800',
   CANCELLED: 'bg-red-100 text-red-800',
+  FAILED: 'bg-red-100 text-red-800',
 };
 
 export default function AdminDashboard() {
@@ -104,22 +106,22 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 pb-4 border-b border-slate-200/80 dark:border-white/10">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-slate-900 flex items-center justify-center shadow-lg shadow-slate-900/10">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 dark:from-white/10 dark:to-white/5 flex items-center justify-center shadow-md shrink-0">
             <LayoutDashboard size={20} className="text-white" />
           </div>
           <div>
-            <h1 className="font-display text-2xl md:text-3xl font-extrabold text-slate-900">Dashboard</h1>
-            <p className="text-slate-500 mt-1">Store performance overview</p>
+            <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Dashboard</h1>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Store performance & inventory overview</p>
           </div>
         </div>
         <button
           onClick={loadStats}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-colors"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 transition-colors shrink-0"
         >
-          <RefreshCw size={15} />
-          Refresh
+          <RefreshCw size={14} />
+          Refresh Stats
         </button>
       </div>
 
@@ -130,20 +132,20 @@ export default function AdminDashboard() {
             key={s.label}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.04 }}
+            transition={{ delay: i * 0.03 }}
           >
             <Link
               to={s.to}
-              className="block bg-white rounded-2xl border border-slate-100 shadow-soft hover:shadow-premium p-5 transition-all hover:-translate-y-1"
+              className="block bg-white dark:bg-dark-800 rounded-2xl border border-slate-200/80 dark:border-white/10 shadow-sm hover:shadow-md p-5 transition-all hover:-translate-y-0.5"
             >
               <div className="flex items-center justify-between mb-3">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-lg`}>
+                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-md`}>
                   <s.icon size={18} className="text-white" />
                 </div>
-                <ArrowUpRight size={15} className="text-slate-300" />
+                <ArrowUpRight size={15} className="text-slate-400" />
               </div>
-              <p className="font-display text-xl font-extrabold text-slate-900 truncate">{s.value}</p>
-              <p className="text-xs text-slate-500 mt-1">{s.label}</p>
+              <p className="font-display text-xl font-extrabold text-slate-900 dark:text-white truncate">{s.value}</p>
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">{s.label}</p>
             </Link>
           </motion.div>
         ))}
@@ -155,14 +157,14 @@ export default function AdminDashboard() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="xl:col-span-2 bg-white rounded-3xl border border-slate-100 shadow-soft p-6"
+          className="xl:col-span-2 bg-white dark:bg-dark-800 rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm p-6"
         >
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="font-display text-lg font-extrabold text-slate-900">Revenue Trend</h2>
-              <p className="text-xs text-slate-500 mt-0.5">Last 12 months</p>
+              <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-white">Revenue Trend</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Last 12 months</p>
             </div>
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-brand-50 text-brand-700">
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-orange-50 dark:bg-orange-950/40 text-[#ff6a00]">
               {inr(data.yearlyRevenue)} YTD
             </span>
           </div>
@@ -173,9 +175,9 @@ export default function AdminDashboard() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="bg-white rounded-3xl border border-slate-100 shadow-soft p-6"
+          className="bg-white dark:bg-dark-800 rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm p-6"
         >
-          <h2 className="font-display text-lg font-extrabold text-slate-900 mb-5">Category Distribution</h2>
+          <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-white mb-5">Category Distribution</h2>
           <DonutChart data={data.categoryDistribution} centerLabel="Products" centerValue={String(data.totalProducts)} />
         </motion.div>
       </div>
@@ -186,14 +188,14 @@ export default function AdminDashboard() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="xl:col-span-2 bg-white rounded-3xl border border-slate-100 shadow-soft p-6"
+          className="xl:col-span-2 bg-white dark:bg-dark-800 rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm p-6"
         >
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="font-display text-lg font-extrabold text-slate-900">Order Trend</h2>
-              <p className="text-xs text-slate-500 mt-0.5">Orders per month · last 12 months</p>
+              <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-white">Order Trend</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Orders per month · last 12 months</p>
             </div>
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600">
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600">
               {data.totalOrders} total
             </span>
           </div>
@@ -204,10 +206,10 @@ export default function AdminDashboard() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className="bg-white rounded-3xl border border-slate-100 shadow-soft p-6"
+          className="bg-white dark:bg-dark-800 rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm p-6"
         >
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display text-lg font-extrabold text-slate-900">Top Selling Products</h2>
+            <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-white">Top Selling Products</h2>
             <Link to="/admin/analytics" className="text-brand-600 hover:text-brand-700 text-xs font-semibold">
               View all
             </Link>
@@ -218,14 +220,8 @@ export default function AdminDashboard() {
             )}
             {data.topSellingProducts.map((p, i) => (
               <div key={p.productId} className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 shrink-0 relative">
-                  {p.image ? (
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-xs font-bold text-slate-400">
-                      {p.name[0]}
-                    </div>
-                  )}
+                <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 shrink-0 relative p-1">
+                  <ProductImage src={p.image} alt={p.name} className="w-full h-full object-contain" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-slate-800 truncate">{p.name}</p>

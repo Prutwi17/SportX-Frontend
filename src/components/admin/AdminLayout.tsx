@@ -17,7 +17,6 @@ import {
   Zap,
   ChevronLeft,
   ChevronRight,
-  Bell,
   Search,
   ChevronDown,
   Sparkles,
@@ -39,12 +38,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [globalSearch, setGlobalSearch] = useState('');
 
   const handleLogout = () => {
     logout();
     navigate('/admin/login', { replace: true });
+  };
+
+  const handleGlobalSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = globalSearch.trim();
+    navigate(`/admin/products${q ? `?q=${encodeURIComponent(q)}` : ''}`);
+    setGlobalSearch('');
   };
 
   const current = navItems.find((item) => location.pathname.startsWith(item.to)) || navItems[0];
@@ -138,7 +144,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <ExternalLink size={13} />
                   View Store
                 </Link>
-                <ThemeToggle />
               </div>
             )}
 
@@ -184,61 +189,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
 
             {/* Middle: Global Search Input */}
-            <div className="hidden md:flex flex-1 max-w-md mx-4">
+            <form onSubmit={handleGlobalSearch} className="hidden md:block flex-1 max-w-md mx-4">
               <div className="relative w-full">
                 <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
+                  value={globalSearch}
+                  onChange={(e) => setGlobalSearch(e.target.value)}
                   placeholder="Search products, orders, customers..."
-                  className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl pl-10 pr-12 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff6a00]/40 transition-all"
+                  className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl pl-10 pr-10 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff6a00]/40 transition-all"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400 bg-slate-200 dark:bg-white/10 px-1.5 py-0.5 rounded">
-                  ⌘K
-                </span>
+                <button
+                  type="submit"
+                  aria-label="Search"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#ff6a00] transition-colors"
+                >
+                  <Search size={14} />
+                </button>
               </div>
-            </div>
+            </form>
 
             {/* Right Controls */}
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-              
-              {/* Notifications Popover Toggle */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className="relative p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
-                  title="Notifications"
-                >
-                  <Bell size={18} />
-                  <span className="absolute top-2 right-2 w-2 h-2 bg-[#ff6a00] rounded-full ring-2 ring-white dark:ring-dark-900" />
-                </button>
-
-                <AnimatePresence>
-                  {showNotifications && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      className="absolute right-0 mt-2 w-80 bg-white dark:bg-dark-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10 p-4 z-50"
-                    >
-                      <div className="flex items-center justify-between mb-3 border-b border-slate-100 dark:border-white/5 pb-2">
-                        <span className="font-display font-extrabold text-sm text-slate-900 dark:text-white">Notifications</span>
-                        <span className="text-[10px] font-bold text-[#ff6a00] bg-orange-50 dark:bg-orange-950/50 px-2 py-0.5 rounded-full">3 New</span>
-                      </div>
-                      <div className="space-y-2 text-xs">
-                        <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-dark-900 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer">
-                          <p className="font-bold text-slate-800 dark:text-slate-200">New Order #ORD-9482</p>
-                          <p className="text-[11px] text-slate-400 mt-0.5">₹11,995 • 2 mins ago</p>
-                        </div>
-                        <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-dark-900 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer">
-                          <p className="font-bold text-slate-800 dark:text-slate-200">Low Stock Alert</p>
-                          <p className="text-[11px] text-slate-400 mt-0.5">Predator Elite (3 remaining)</p>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
               <ThemeToggle />
 
               <Link

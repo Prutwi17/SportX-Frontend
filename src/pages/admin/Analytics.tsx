@@ -13,6 +13,7 @@ import {
   RefreshCw,
   Star,
   Wallet,
+  BarChart3,
 } from 'lucide-react';
 import { reportsService } from '../../services/reportsService';
 import type { ReportsData } from '../../types';
@@ -21,6 +22,7 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import LineChart from '../../components/admin/LineChart';
 import BarChart from '../../components/admin/BarChart';
 import DonutChart from '../../components/admin/DonutChart';
+import ProductImage from '../../components/common/ProductImage';
 
 const inr = (v: number) => `₹${(v || 0).toLocaleString('en-IN')}`;
 
@@ -32,6 +34,7 @@ const statusColors: Record<string, string> = {
   OUT_FOR_DELIVERY: 'bg-orange-100 text-orange-800',
   DELIVERED: 'bg-green-100 text-green-800',
   CANCELLED: 'bg-red-100 text-red-800',
+  FAILED: 'bg-red-100 text-red-800',
 };
 
 export default function Analytics() {
@@ -77,29 +80,34 @@ export default function Analytics() {
 
   return (
     <AdminLayout>
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="font-display text-2xl md:text-3xl font-extrabold text-slate-900">Business Analytics</h1>
-          <p className="text-slate-500 mt-1">Revenue, orders and product performance</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 pb-4 border-b border-slate-200/80 dark:border-white/10">
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#ff6a00] to-amber-600 flex items-center justify-center shadow-md text-white shrink-0">
+            <BarChart3 size={20} />
+          </div>
+          <div>
+            <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Analytics & Reports</h1>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Comprehensive revenue, order volume and sales breakdown</p>
+          </div>
         </div>
-        <button onClick={load} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-colors">
-          <RefreshCw size={15} /> Refresh
+        <button onClick={load} className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 transition-colors shrink-0">
+          <RefreshCw size={14} /> Refresh Reports
         </button>
       </div>
 
       {/* Revenue cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
         {revenueCards.map((c, i) => (
-          <motion.div key={c.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-soft p-5">
+          <motion.div key={c.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
+            <div className="bg-white dark:bg-dark-800 rounded-2xl border border-slate-200/80 dark:border-white/10 shadow-sm p-5">
               <div className="flex items-center justify-between mb-3">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${c.color} flex items-center justify-center shadow-lg`}>
+                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${c.color} flex items-center justify-center shadow-md`}>
                   <c.icon size={18} className="text-white" />
                 </div>
-                <span className="text-xs font-semibold text-slate-400">{c.sub}</span>
+                <span className="text-xs font-semibold text-slate-400 dark:text-slate-400">{c.sub}</span>
               </div>
-              <p className="font-display text-xl font-extrabold text-slate-900 truncate">{c.value}</p>
-              <p className="text-xs text-slate-500 mt-1">{c.label}</p>
+              <p className="font-display text-xl font-extrabold text-slate-900 dark:text-white truncate">{c.value}</p>
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">{c.label}</p>
             </div>
           </motion.div>
         ))}
@@ -107,95 +115,91 @@ export default function Analytics() {
 
       {/* KPI chips */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4">
+        <div className="bg-white dark:bg-dark-800 rounded-2xl border border-slate-200/80 dark:border-white/10 shadow-sm p-4">
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Average Order Value</p>
-          <p className="font-display text-lg font-extrabold text-slate-900 mt-1">{inr(data.averageOrderValue)}</p>
+          <p className="font-display text-lg font-extrabold text-slate-900 dark:text-white mt-1">{inr(data.averageOrderValue)}</p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4">
+        <div className="bg-white dark:bg-dark-800 rounded-2xl border border-slate-200/80 dark:border-white/10 shadow-sm p-4">
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Best Selling Brand</p>
-          <p className="font-display text-lg font-extrabold text-slate-900 mt-1 flex items-center gap-1.5 truncate">
+          <p className="font-display text-lg font-extrabold text-slate-900 dark:text-white mt-1 flex items-center gap-1.5 truncate">
             {data.bestSellingBrand ? <><Trophy size={15} className="text-amber-400 fill-current shrink-0" />{data.bestSellingBrand}</> : 'N/A'}
           </p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4">
+        <div className="bg-white dark:bg-dark-800 rounded-2xl border border-slate-200/80 dark:border-white/10 shadow-sm p-4">
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Active Customers</p>
-          <p className="font-display text-lg font-extrabold text-slate-900 mt-1 flex items-center gap-1.5">
-            <Users size={15} className="text-cyan-500" />{data.totalCustomers}
+          <p className="font-display text-lg font-extrabold text-slate-900 dark:text-white mt-1 flex items-center gap-1.5">
+            <Users size={15} className="text-[#ff6a00]" />{data.totalCustomers}
           </p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-soft p-4">
+        <div className="bg-white dark:bg-dark-800 rounded-2xl border border-slate-200/80 dark:border-white/10 shadow-sm p-4">
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Order Status</p>
-          <p className="text-sm font-bold text-slate-800 mt-1.5 flex flex-wrap gap-1.5">
-            <span className="text-emerald-600">{data.completedOrders} done</span>·
-            <span className="text-amber-600">{data.pendingOrders} pending</span>·
-            <span className="text-red-600">{data.cancelledOrders} cancelled</span>
+          <p className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-2 flex flex-wrap gap-1.5">
+            <span className="text-emerald-600 dark:text-emerald-400">{data.completedOrders} done</span>·
+            <span className="text-amber-600 dark:text-amber-400">{data.pendingOrders} pending</span>·
+            <span className="text-red-600 dark:text-red-400">{data.cancelledOrders} cancelled</span>
           </p>
         </div>
       </div>
 
       {/* 30-day trends */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 mb-8">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-3xl border border-slate-100 shadow-soft p-6">
-          <h2 className="font-display text-lg font-extrabold text-slate-900 mb-1">Daily Revenue</h2>
-          <p className="text-xs text-slate-500 mb-5">Last 30 days</p>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-dark-800 rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm p-6">
+          <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-white mb-1">Daily Revenue</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">Last 30 days</p>
           <LineChart data={data.revenueByDay} valueFormatter={(v) => inr(v)} labelEvery={5} />
         </motion.div>
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white rounded-3xl border border-slate-100 shadow-soft p-6">
-          <h2 className="font-display text-lg font-extrabold text-slate-900 mb-1">Daily Orders</h2>
-          <p className="text-xs text-slate-500 mb-5">Last 30 days</p>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white dark:bg-dark-800 rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm p-6">
+          <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-white mb-1">Daily Orders</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">Last 30 days</p>
           <BarChart data={data.orderByDay} labelEvery={5} color="#f97316" />
         </motion.div>
       </div>
 
       {/* Monthly trends */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 mb-8">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-3xl border border-slate-100 shadow-soft p-6">
-          <h2 className="font-display text-lg font-extrabold text-slate-900 mb-1">Monthly Revenue</h2>
-          <p className="text-xs text-slate-500 mb-5">Last 12 months</p>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white dark:bg-dark-800 rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm p-6">
+          <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-white mb-1">Monthly Revenue</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">Last 12 months</p>
           <BarChart data={data.revenueByMonth} valueFormatter={(v) => inr(v)} />
         </motion.div>
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="bg-white rounded-3xl border border-slate-100 shadow-soft p-6">
-          <h2 className="font-display text-lg font-extrabold text-slate-900 mb-1">Monthly Orders</h2>
-          <p className="text-xs text-slate-500 mb-5">Last 12 months</p>
-          <LineChart data={data.orderByMonth} color="#0b0b0b" />
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="bg-white dark:bg-dark-800 rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm p-6">
+          <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-white mb-1">Monthly Orders</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">Last 12 months</p>
+          <LineChart data={data.orderByMonth} color="#f97316" />
         </motion.div>
       </div>
 
       {/* Categories + top products */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-8">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white rounded-3xl border border-slate-100 shadow-soft p-6">
-          <h2 className="font-display text-lg font-extrabold text-slate-900 mb-1">Category Distribution</h2>
-          <p className="text-xs text-slate-500 mb-5">Products per category</p>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white dark:bg-dark-800 rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm p-6">
+          <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-white mb-1">Category Distribution</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">Products per category</p>
           <DonutChart data={data.categoryDistribution} centerLabel="Products" centerValue={String(data.totalProducts)} />
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="bg-white rounded-3xl border border-slate-100 shadow-soft p-6">
-          <h2 className="font-display text-lg font-extrabold text-slate-900 mb-1">Top Categories</h2>
-          <p className="text-xs text-slate-500 mb-5">By sales revenue</p>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="bg-white dark:bg-dark-800 rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm p-6">
+          <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-white mb-1">Top Categories</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">By sales revenue</p>
           <BarChart data={data.topCategories.map((c) => ({ label: c.name, value: c.value }))} valueFormatter={(v) => inr(v)} color="#f59e0b" />
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-white rounded-3xl border border-slate-100 shadow-soft p-6">
-          <h2 className="font-display text-lg font-extrabold text-slate-900 mb-5">Top Selling Products</h2>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-white dark:bg-dark-800 rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-sm p-6">
+          <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-white mb-5">Top Selling Products</h2>
           <div className="space-y-4">
             {data.topProducts.length === 0 && <p className="text-sm text-slate-400 text-center py-8">No sales yet</p>}
             {data.topProducts.map((p, i) => (
               <div key={p.productId} className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 shrink-0 relative">
-                  {p.image ? (
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-xs font-bold text-slate-400">{p.name[0]}</div>
-                  )}
+                <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 dark:bg-dark-900 shrink-0 relative p-1">
+                  <ProductImage src={p.image} alt={p.name} className="w-full h-full object-contain" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-slate-800 truncate">{p.name}</p>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">{p.name}</p>
                   <p className="text-xs text-slate-400">{p.quantitySold} sold</p>
                 </div>
-                <span className="flex items-center gap-1 text-sm font-bold text-slate-800">
-                  <Star size={12} className="text-amber-400 fill-current" />{i + 1}
+                <span className="flex items-center gap-1 text-xs font-bold text-slate-800 dark:text-slate-200">
+                  <Star size={12} className="text-amber-400 fill-current" />#{i + 1}
                 </span>
-                <span className="text-sm font-bold text-slate-800">{inr(p.revenue)}</span>
+                <span className="text-sm font-extrabold text-slate-900 dark:text-white">{inr(p.revenue)}</span>
               </div>
             ))}
           </div>

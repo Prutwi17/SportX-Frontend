@@ -45,8 +45,9 @@ export default function ProductCard({ product, index = 0 }: Props) {
   };
 
   const soldOut = product.stockQuantity === 0;
-  const ratingVal = product.averageRating > 0 ? product.averageRating : 4.8;
-  const reviewCount = product.ratingCount > 0 ? product.ratingCount : 1200;
+  const showRating = (product.averageRating ?? 0) > 0 && (product.ratingCount ?? 0) > 0;
+  const ratingVal = product.averageRating ?? 0;
+  const reviewCount = product.ratingCount ?? 0;
 
   return (
     <motion.div
@@ -96,19 +97,25 @@ export default function ProductCard({ product, index = 0 }: Props) {
       {/* Content Container */}
       <div className="flex flex-col flex-1">
         {/* Rating Stars & Count */}
-        <div className="flex items-center gap-1 mb-1">
-          <div className="flex text-amber-400">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <Star key={star} size={11} className="fill-current" />
-            ))}
+        {showRating && (
+          <div className="flex items-center gap-1 mb-1">
+            <div className="flex text-amber-400">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  size={11}
+                  className={star <= Math.round(ratingVal) ? 'fill-current' : 'fill-slate-200 dark:fill-slate-600 text-slate-200 dark:text-slate-600'}
+                />
+              ))}
+            </div>
+            <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 ml-0.5">
+              {ratingVal.toFixed(1)}
+            </span>
+            <span className="text-[10px] text-slate-400 font-medium">
+              ({reviewCount > 999 ? `${(reviewCount / 1000).toFixed(1)}k` : reviewCount})
+            </span>
           </div>
-          <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 ml-0.5">
-            {ratingVal.toFixed(1)}
-          </span>
-          <span className="text-[10px] text-slate-400 font-medium">
-            ({reviewCount > 999 ? `${(reviewCount / 1000).toFixed(1)}k` : reviewCount})
-          </span>
-        </div>
+        )}
 
         {/* Brand */}
         <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-400 capitalize mb-0.5">
