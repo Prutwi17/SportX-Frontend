@@ -1,5 +1,6 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import {
   Plus,
   Pencil,
@@ -39,6 +40,7 @@ const stockFilterLabels: Record<StockFilter, string> = {
 };
 
 export default function ManageProducts() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<PagedResponse<Product> | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -50,8 +52,8 @@ export default function ManageProducts() {
   const [toast, setToast] = useState('');
   const [toastType, setToastType] = useState<'success' | 'error'>('success');
 
-  const [keyword, setKeyword] = useState('');
-  const [appliedKeyword, setAppliedKeyword] = useState('');
+  const [keyword, setKeyword] = useState(searchParams.get('q') || '');
+  const [appliedKeyword, setAppliedKeyword] = useState(searchParams.get('q') || '');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [brandFilter, setBrandFilter] = useState('');
   const [stockFilter, setStockFilter] = useState<StockFilter>('ALL');
@@ -116,10 +118,23 @@ export default function ManageProducts() {
     brandService.getAll().then((res) => setBrands(res.data));
   }, [page, appliedKeyword, categoryFilter, brandFilter, stockFilter, viewMode]);
 
+  useEffect(() => {
+    const q = searchParams.get('q') || '';
+    setKeyword(q);
+    setAppliedKeyword(q);
+    setPage(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
-    setPage(0);
-    setAppliedKeyword(keyword.trim());
+    const q = keyword.trim();
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (q) next.set('q', q);
+      else next.delete('q');
+      return next;
+    });
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -275,22 +290,22 @@ export default function ManageProducts() {
       <Toast message={toast} type={toastType} />
 
       {/* Header & Page Action */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 pb-4 border-b border-slate-200/80 dark:border-white/10">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-[#ff6a00] flex items-center justify-center shadow-lg shadow-orange-500/20 text-white">
-            <Package size={22} />
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#ff6a00] to-amber-600 flex items-center justify-center shadow-md text-white shrink-0">
+            <Package size={20} />
           </div>
           <div>
-            <h1 className="font-display text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white">
-              Inventory Catalog
+            <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+              Products
             </h1>
-            <p className="text-slate-500 text-sm">
-              Manage products, stock levels, categories and pricing
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              Manage product inventory, pricing, stock levels and categories
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
           {/* View Mode Toggle Switch */}
           <div className="flex items-center bg-slate-200/80 dark:bg-white/10 p-1 rounded-xl">
             <button
@@ -327,13 +342,13 @@ export default function ManageProducts() {
                 setShowForm(true);
               }
             }}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-display font-bold text-sm uppercase tracking-wide transition-all ${
+            className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-display font-bold text-xs uppercase tracking-wider transition-all shrink-0 ${
               showForm
-                ? 'bg-white border-2 border-slate-200 text-slate-700 hover:bg-slate-50'
+                ? 'bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 hover:bg-slate-50'
                 : 'bg-[#ff6a00] text-white hover:bg-[#ea580c] shadow-lg shadow-orange-500/25'
             }`}
           >
-            {showForm ? 'Cancel' : <><Plus size={16} /> Add Product</>}
+            {showForm ? 'Cancel' : <><Plus size={15} /> Add Product</>}
           </button>
         </div>
       </div>
@@ -587,6 +602,13 @@ export default function ManageProducts() {
             setCategoryFilter('');
             setBrandFilter('');
             setStockFilter('ALL');
+            if (searchParams.get('q')) {
+              setSearchParams((prev) => {
+                const next = new URLSearchParams(prev);
+                next.delete('q');
+                return next;
+              });
+            }
           }}
           className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-600 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-50 transition-colors"
         >
@@ -656,10 +678,12 @@ export default function ManageProducts() {
                     </span>
 
                     {/* Rating badge */}
-                    <span className="absolute bottom-2.5 right-2.5 bg-white/90 dark:bg-dark-800/90 backdrop-blur-md px-2 py-0.5 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1 shadow-sm">
-                      <Star size={11} className="text-amber-400 fill-current" />
-                      {p.averageRating ? p.averageRating.toFixed(1) : '4.8'}
-                    </span>
+                    {p.averageRating > 0 && (
+                      <span className="absolute bottom-2.5 right-2.5 bg-white/90 dark:bg-dark-800/90 backdrop-blur-md px-2 py-0.5 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1 shadow-sm">
+                        <Star size={11} className="text-amber-400 fill-current" />
+                        {p.averageRating.toFixed(1)}
+                      </span>
+                    )}
                   </div>
 
                   {/* Body Info */}
@@ -784,7 +808,7 @@ export default function ManageProducts() {
                   <td className="hidden xl:table-cell text-sm text-slate-600 dark:text-slate-400">{p.categoryName || '—'}</td>
                   <td>
                     <div className="whitespace-nowrap font-display font-bold text-slate-900 dark:text-white">
-                      ₹{p.discountedPrice || p.price}
+                      ₹{(p.discountedPrice || p.price).toLocaleString('en-IN')}
                     </div>
                   </td>
                   <td>
@@ -797,14 +821,18 @@ export default function ManageProducts() {
                           : 'bg-emerald-100 text-emerald-700'
                       }`}
                     >
-                      {p.stockQuantity} left
+                      {p.stockQuantity === 0 ? 'Out of Stock' : `${p.stockQuantity} left`}
                     </span>
                   </td>
                   <td className="hidden 2xl:table-cell">
-                    <span className="inline-flex items-center gap-1 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                      <Star size={13} className="text-amber-400 fill-current" />
-                      {p.averageRating ? p.averageRating.toFixed(1) : '4.8'}
-                    </span>
+                    {p.averageRating > 0 ? (
+                      <span className="inline-flex items-center gap-1 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                        <Star size={13} className="text-amber-400 fill-current" />
+                        {p.averageRating.toFixed(1)}
+                      </span>
+                    ) : (
+                      <span className="text-sm text-slate-400">—</span>
+                    )}
                   </td>
                   <td>
                     <span className={`admin-badge ${p.active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
@@ -857,7 +885,7 @@ export default function ManageProducts() {
       <ConfirmDialog
         open={!!deleteTarget}
         title="Delete Product"
-        message={`Delete "${deleteTarget?.name}"? This will mark the product as inactive.`}
+        message={`Delete "${deleteTarget?.name}"? This action is permanent and cannot be undone.`}
         confirmLabel="Delete"
         loading={deleteBusy}
         onConfirm={handleDelete}
@@ -867,7 +895,7 @@ export default function ManageProducts() {
       <ConfirmDialog
         open={bulkDeleteOpen}
         title="Delete Selected Products"
-        message={`Delete ${selected.size} selected product(s)?`}
+        message={`Delete ${selected.size} selected product(s)? This action is permanent and cannot be undone.`}
         confirmLabel={`Delete ${selected.size}`}
         loading={deleteBusy}
         onConfirm={handleBulkDelete}

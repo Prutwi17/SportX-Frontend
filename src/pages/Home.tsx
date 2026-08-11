@@ -13,9 +13,19 @@ import type { Product } from '../types';
 import { productService } from '../services/productService';
 import ProductCard from '../components/common/ProductCard';
 
-import ronaldoHeroPerfectImg from '../assets/image/ronaldo_hero_perfect.jpg';
+import ronaldoHeroPerfectImg from '../assets/image/cr7_hero.png';
 import realMadridJerseyUserImg from '../assets/image/real_madrid_jersey_user.png';
 import footballBootsUserImg from '../assets/image/football_boots_user.png';
+
+// All 8 Featured Product Cutouts from src/assets/image/feature_product/
+import featRealMadridHome from '../assets/image/feature_product/Real Madrid Home Jersey Fan Version Soc Jersey - Premium Football Jersey-Picsart-BackgroundRemover_.png';
+import featRcbJersey from "../assets/image/feature_product/PUMA-x-RCB-2026-Men's-Official-Match-Jersey-Picsart-BackgroundRemover_.png";
+import featPumaNitro from '../assets/image/feature_product/Electrify Nitro 4 Running Shoes Off White 11 Casual_.png';
+import featLaLigaBall from '../assets/image/feature_product/PUMA Football LaLiga 1 Accelerate Mini - PUMA_.png';
+import featKookaburraBat from '../assets/image/feature_product/Cricket Bats Kookaburra_.png';
+import featNikeVaporLV8 from '../assets/image/feature_product/Nike Mercurial Vapor 16 Elite LV8 HV4887-100 Grailify-Picsart-BackgroundRemover_.jpg';
+import featNikeDreamSpeed from '../assets/image/feature_product/Mercurial Nike Vapor Pro Fg NIKE VAPOR 16 PRO MERCURIAL DREAM SPEED FG_.jpg';
+import featLeatherBall from '../assets/image/feature_product/Cricket Leather Ball_.jpg';
 
 // Exact cropped category image cutouts from reference image
 import catFootballImg from '../assets/image/cat_football.png';
@@ -28,21 +38,30 @@ import catGymImg from '../assets/image/cat_gym.png';
 import catBagsImg from '../assets/image/cat_bags.png';
 
 const CATEGORY_ITEMS = [
-  { name: 'Football', img: catFootballImg, categoryId: 2 },
-  { name: 'Cricket', img: catCricketImg, categoryId: 1 },
-  { name: 'Jerseys', img: catJerseysImg, categoryId: 49 },
-  { name: 'Running Shoes', img: catShoesImg, categoryId: 60 },
-  { name: 'Badminton', img: catBadmintonImg, categoryId: 58 },
-  { name: 'Tennis', img: catTennisImg, categoryId: 4 },
-  { name: 'Gym & Fitness', img: catGymImg, categoryId: 61 },
-  { name: 'Sports Bags', img: catBagsImg },
+  { name: 'Football', img: catFootballImg, query: 'Football' },
+  { name: 'Cricket', img: catCricketImg, query: 'Cricket' },
+  { name: 'Jerseys', img: catJerseysImg, query: 'Jersey' },
+  { name: 'Running Shoes', img: catShoesImg, query: 'Running' },
+  { name: 'Badminton', img: catBadmintonImg, query: 'Badminton' },
+  { name: 'Tennis', img: catTennisImg, query: 'Tennis' },
+  { name: 'Gym & Fitness', img: catGymImg, query: 'Gym' },
+  { name: 'Sports Bags', img: catBagsImg, query: 'Bag' },
 ];
 
-const categoryHref = (cat: { name: string; categoryId?: number }) =>
-  cat.categoryId ? `/products?categoryId=${cat.categoryId}` : `/products?q=${encodeURIComponent(cat.name)}`;
+const categoryHref = (cat: { name: string; query?: string }) =>
+  `/products?q=${encodeURIComponent(cat.query || cat.name)}`;
 
-// Real product IDs from the database specified by user for featured products
-const FEATURED_PRODUCT_IDS = [438, 439, 440, 28, 361, 432, 336, 335];
+// Image Cutout Map by Product Name to ensure 100% exact product ID and image pairing
+const PRODUCT_IMAGE_MAP: Record<string, string> = {
+  'Real Madrid Home Jersey Fan Edition': featRealMadridHome,
+  'Puma x RCB Official Match Jersey 2026': featRcbJersey,
+  'Puma Electrify Nitro 4 Running Shoes': featPumaNitro,
+  'PUMA LaLiga 1 Accelerate Match Ball': featLaLigaBall,
+  'Kookaburra Kahuna Pro English Willow Bat': featKookaburraBat,
+  'Nike Mercurial Vapor 16 Elite LV8': featNikeVaporLV8,
+  'Nike Vapor 16 Pro Mercurial Dream Speed': featNikeDreamSpeed,
+  'Red Leather Match Cricket Ball': featLeatherBall,
+};
 
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -50,14 +69,17 @@ export default function Home() {
 
   useEffect(() => {
     let cancelled = false;
-    setFeaturedLoading(true);
-    Promise.all(FEATURED_PRODUCT_IDS.map((id) => productService.getById(id)))
-      .then((results) => {
-        if (!cancelled) setFeaturedProducts(results.map((r) => r.data));
+    productService.getAll(0, 16)
+      .then((res) => {
+        if (!cancelled && res.data?.content) {
+          const productsWithImages = res.data.content.map((p) => ({
+            ...p,
+            primaryImage: PRODUCT_IMAGE_MAP[p.name] || p.primaryImage,
+          }));
+          setFeaturedProducts(productsWithImages);
+        }
       })
-      .catch(() => {
-        if (!cancelled) setFeaturedProducts([]);
-      })
+      .catch(() => {})
       .finally(() => {
         if (!cancelled) setFeaturedLoading(false);
       });
@@ -76,7 +98,7 @@ export default function Home() {
           <img
             src={ronaldoHeroPerfectImg}
             alt="Ronaldo Stadium Artwork"
-            className="w-full h-full object-cover object-center lg:object-right opacity-90 filter contrast-105"
+            className="w-full h-full object-cover object-center lg:object-right translate-x-3 sm:translate-x-6 lg:translate-x-12 opacity-90 filter contrast-105"
           />
           {/* Gradient Overlay For Text Readability on Left Side */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#09090b] via-[#09090b]/85 sm:via-[#09090b]/60 to-transparent z-10" />
@@ -115,7 +137,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
-                className="text-slate-200 text-sm sm:text-base max-w-lg mb-8 font-medium leading-relaxed drop-shadow-sm"
+                className="text-slate-200 text-sm sm:text-base max-w-lg mb-8 font-medium leading-relaxed drop-shadow-sm uppercase"
               >
                 Premium sports gear for athletes, dreamers and champions. Gear up with top-tier equipment and iconic activewear.
               </motion.p>
@@ -208,7 +230,7 @@ export default function Home() {
                         className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 rounded-lg"
                       />
                     </div>
-                    <span className="font-display font-bold text-xs text-slate-900 dark:text-white group-hover:text-[#ff6a00] transition-colors">
+                    <span className="font-display font-bold text-xs text-slate-900 dark:text-white group-hover:text-[#ff6a00] transition-colors uppercase">
                       {cat.name}
                     </span>
                   </Link>
@@ -221,10 +243,10 @@ export default function Home() {
           <section className="mb-16">
             <div className="flex items-center justify-between gap-4 mb-8">
               <div className="flex items-center gap-3">
-                <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight uppercase">
                   Featured Products
                 </h2>
-                <span className="inline-flex items-center gap-1.5 bg-orange-50 dark:bg-orange-950/50 border border-orange-200 dark:border-orange-800 text-[#ff6a00] font-bold text-xs px-3 py-1 rounded-full">
+                <span className="inline-flex items-center gap-1.5 bg-orange-50 dark:bg-orange-950/50 border border-orange-200 dark:border-orange-800 text-[#ff6a00] font-bold text-xs px-3 py-1 rounded-full uppercase">
                   <Flame size={14} className="fill-current" />
                   Bestsellers
                 </span>
@@ -255,9 +277,9 @@ export default function Home() {
             ) : featuredProducts.length === 0 ? (
               <p className="text-center text-sm text-slate-400 py-10">Featured products unavailable right now.</p>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
-                {featuredProducts.map((prod, index) => (
-                  <ProductCard key={prod.id} product={prod} index={index} />
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                {featuredProducts.slice(0, 8).map((prod, index) => (
+                  <ProductCard key={prod.id || index} product={prod} index={index} />
                 ))}
               </div>
             )}
@@ -312,7 +334,7 @@ export default function Home() {
                   REAL MADRID <br />
                   <span className="text-blue-300">HOME JERSEY</span>
                 </h3>
-                <p className="text-slate-400 text-xs font-medium mb-5">Feel the Legacy</p>
+                <p className="text-slate-400 text-xs font-medium mb-5 uppercase">Feel the Legacy</p>
                 <Link
                   to="/products?q=Real%20Madrid"
                   className="inline-flex items-center gap-2 bg-white/10 hover:bg-[#ff6a00] border border-white/20 hover:border-[#ff6a00] text-white font-display font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-full transition-all duration-300 shadow-md"

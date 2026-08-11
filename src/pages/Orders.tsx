@@ -22,9 +22,19 @@ export default function Orders() {
 
   if (loading) return <LoadingSpinner />;
 
+  const getPageWindow = (current: number, totalPages: number): (number | 'ellipsis-l' | 'ellipsis-r')[] => {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i);
+    const items: (number | 'ellipsis-l' | 'ellipsis-r')[] = [0];
+    if (current > 3) items.push('ellipsis-l');
+    for (let i = Math.max(1, current - 1); i <= Math.min(totalPages - 2, current + 1); i++) items.push(i);
+    if (current < totalPages - 4) items.push('ellipsis-r');
+    items.push(totalPages - 1);
+    return items;
+  };
+
   const statusBadges: Record<string, { bg: string; text: string; icon: React.ElementType }> = {
     PENDING: { bg: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800', text: 'Pending', icon: Clock },
-    CONFIRMED: { bg: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800', text: 'Success', icon: CheckCircle2 },
+    CONFIRMED: { bg: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800', text: 'Confirmed', icon: CheckCircle2 },
     PACKED: { bg: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800', text: 'Packed', icon: Package },
     SHIPPED: { bg: 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800', text: 'Shipped', icon: Package },
     OUT_FOR_DELIVERY: { bg: 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800', text: 'Out for Delivery', icon: Package },
@@ -172,20 +182,24 @@ export default function Orders() {
           </div>
 
           {orders.totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-10">
-              {Array.from({ length: orders.totalPages }, (_, i) => (
-                <motion.button
-                  key={i}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setPage(i)}
-                  className={`w-10 h-10 rounded-xl font-display font-semibold transition-all ${
-                    i === page ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/30' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50'
-                  }`}
-                >
-                  {i + 1}
-                </motion.button>
-              ))}
+            <div className="flex justify-center flex-wrap gap-2 mt-10">
+              {getPageWindow(page, orders.totalPages).map((p, i) =>
+                typeof p === 'string' ? (
+                  <span key={`${p}-${i}`} className="px-1 text-slate-400 select-none self-center">…</span>
+                ) : (
+                  <motion.button
+                    key={p}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => setPage(p)}
+                    className={`w-10 h-10 rounded-xl font-display font-semibold transition-all ${
+                      p === page ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/30' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50'
+                    }`}
+                  >
+                    {p + 1}
+                  </motion.button>
+                )
+              )}
             </div>
           )}
         </>

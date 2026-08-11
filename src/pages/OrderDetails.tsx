@@ -47,6 +47,7 @@ export default function OrderDetails() {
     OUT_FOR_DELIVERY: { bg: 'bg-orange-100 text-orange-800', dot: 'bg-orange-500' },
     DELIVERED: { bg: 'bg-green-100 text-green-800', dot: 'bg-green-500' },
     CANCELLED: { bg: 'bg-red-100 text-red-800', dot: 'bg-red-500' },
+    FAILED: { bg: 'bg-red-100 text-red-800', dot: 'bg-red-500' },
   };
 
   return (

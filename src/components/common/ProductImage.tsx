@@ -11,14 +11,18 @@ function normalizeUrl(src?: string | null): string | null {
   if (!src) return null;
   const trimmed = src.trim();
   if (!trimmed) return null;
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')
-    || trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
+  if (trimmed.startsWith('data:') || trimmed.startsWith('blob:') || trimmed.startsWith('/@fs/') || trimmed.includes('/assets/') || trimmed.includes('assets/')) {
+    return trimmed;
+  }
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
     return trimmed;
   }
   if (trimmed.startsWith('//')) return `https:${trimmed}`;
+  if (trimmed.startsWith('/uploads/') || trimmed.startsWith('uploads/')) {
+    const cleanPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+    return `http://127.0.0.1:8080${cleanPath}`;
+  }
   if (trimmed.startsWith('/')) return trimmed;
-  if (trimmed.startsWith('uploads/')) return `/${trimmed}`;
-  if (trimmed.includes('/') && !trimmed.startsWith('http')) return `https://${trimmed}`;
   return trimmed;
 }
 

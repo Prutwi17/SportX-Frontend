@@ -90,21 +90,21 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-[76px] gap-4">
           
           {/* LEFT: Logo & Navigation Links */}
-          <div className="flex items-center gap-8 lg:gap-12">
+          <div className="flex items-center gap-5 lg:gap-10 min-w-0">
             <Link to="/" className="flex items-center shrink-0">
-              <span className="font-display text-2xl sm:text-3xl font-black tracking-tight text-white">
+              <span className="font-display text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white">
                 Sport<span className="text-[#ff6a00]">X</span>
               </span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-6 lg:gap-8">
+            <nav className="hidden md:flex items-center gap-4 lg:gap-7">
               {navItems.map((item) => {
                 const active = location.pathname === item.path;
                 return (
                   <Link
                     key={item.label}
                     to={item.path}
-                    className={`relative py-1 font-display text-xs lg:text-sm font-bold uppercase tracking-wider transition-colors ${
+                    className={`relative py-1 whitespace-nowrap font-display text-xs lg:text-sm font-bold uppercase tracking-wider transition-colors ${
                       active ? 'text-white' : 'text-slate-300 hover:text-white'
                     }`}
                   >
@@ -122,7 +122,7 @@ export default function Navbar() {
           </div>
 
           {/* CENTER: Search Bar (48px height) */}
-          <form onSubmit={handleSearch} className="hidden xl:block flex-1 max-w-md mx-4">
+          <form onSubmit={handleSearch} className="hidden lg:block flex-1 min-w-0 max-w-xs xl:max-w-md mx-4">
             <div className="relative">
               <input
                 type="text"
@@ -142,7 +142,15 @@ export default function Navbar() {
           </form>
 
           {/* RIGHT: Actions (Cart, Wishlist, Auth/Profile, Theme) */}
-          <div className="flex items-center gap-3 sm:gap-5 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+            <Link
+              to="/products"
+              className="hidden md:flex lg:hidden p-2 text-slate-200 hover:text-white transition-colors"
+              title="Search"
+            >
+              <Search size={22} />
+            </Link>
+
             <ThemeToggle />
 
             {/* Cart Icon */}
@@ -235,17 +243,17 @@ export default function Navbar() {
                 </AnimatePresence>
               </div>
             ) : (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4">
                 <Link
                   to="/login"
-                  className="relative text-xs lg:text-sm font-medium uppercase tracking-wider text-slate-200 hover:text-white transition-colors py-1 group"
+                  className="relative text-[11px] sm:text-xs lg:text-sm font-medium uppercase tracking-wider text-slate-200 hover:text-white transition-colors py-1 group whitespace-nowrap"
                 >
                   Login
                   <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-[#ff6a00] group-hover:w-full transition-all duration-300 rounded-full" />
                 </Link>
                 <Link
                   to="/register"
-                  className="h-12 px-6 rounded-full bg-[#ff6a00] hover:bg-[#ea580c] text-white font-display font-bold text-xs lg:text-sm uppercase tracking-wider flex items-center justify-center transition-all duration-300 shadow-md shadow-orange-500/20 hover:shadow-orange-500/35 hover:-translate-y-0.5 active:scale-95"
+                  className="h-10 px-4 sm:h-12 sm:px-6 rounded-full bg-[#ff6a00] hover:bg-[#ea580c] text-white font-display font-bold text-[10px] sm:text-xs lg:text-sm uppercase tracking-wider flex items-center justify-center transition-all duration-300 shadow-md shadow-orange-500/20 hover:shadow-orange-500/35 hover:-translate-y-0.5 active:scale-95 whitespace-nowrap"
                 >
                   Register
                 </Link>

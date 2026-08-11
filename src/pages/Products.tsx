@@ -9,6 +9,40 @@ import type { Product, Category, Brand, PagedResponse } from '../types';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ProductCard from '../components/common/ProductCard';
 
+
+
+// All 8 Featured Product Cutouts from src/assets/image/feature_product/
+import featRealMadridHome from '../assets/image/feature_product/Real Madrid Home Jersey Fan Version Soc Jersey - Premium Football Jersey-Picsart-BackgroundRemover_.png';
+import featRcbJersey from "../assets/image/feature_product/PUMA-x-RCB-2026-Men's-Official-Match-Jersey-Picsart-BackgroundRemover_.png";
+import featPumaNitro from '../assets/image/feature_product/Electrify Nitro 4 Running Shoes Off White 11 Casual_.png';
+import featLaLigaBall from '../assets/image/feature_product/PUMA Football LaLiga 1 Accelerate Mini - PUMA_.png';
+import featKookaburraBat from '../assets/image/feature_product/Cricket Bats Kookaburra_.png';
+import featNikeVaporLV8 from '../assets/image/feature_product/Nike Mercurial Vapor 16 Elite LV8 HV4887-100 Grailify-Picsart-BackgroundRemover_.jpg';
+import featNikeDreamSpeed from '../assets/image/feature_product/Mercurial Nike Vapor Pro Fg NIKE VAPOR 16 PRO MERCURIAL DREAM SPEED FG_.jpg';
+import featLeatherBall from '../assets/image/feature_product/Cricket Leather Ball_.jpg';
+
+// Image Cutout Map by Product Name to ensure 100% exact product ID and image pairing
+const PRODUCT_IMAGE_MAP: Record<string, string> = {
+  'Real Madrid Home Jersey Fan Edition': featRealMadridHome,
+  'Puma x RCB Official Match Jersey 2026': featRcbJersey,
+  'Puma Electrify Nitro 4 Running Shoes': featPumaNitro,
+  'PUMA LaLiga 1 Accelerate Match Ball': featLaLigaBall,
+  'Kookaburra Kahuna Pro English Willow Bat': featKookaburraBat,
+  'Nike Mercurial Vapor 16 Elite LV8': featNikeVaporLV8,
+  'Nike Vapor 16 Pro Mercurial Dream Speed': featNikeDreamSpeed,
+  'Red Leather Match Cricket Ball': featLeatherBall,
+};
+
+function getPageWindow(page: number, totalPages: number): (number | 'ellipsis-l' | 'ellipsis-r')[] {
+  if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i);
+  const items: (number | 'ellipsis-l' | 'ellipsis-r')[] = [0];
+  if (page > 3) items.push('ellipsis-l');
+  for (let i = Math.max(1, page - 1); i <= Math.min(totalPages - 2, page + 1); i++) items.push(i);
+  if (page < totalPages - 4) items.push('ellipsis-r');
+  items.push(totalPages - 1);
+  return items;
+}
+
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<PagedResponse<Product> | null>(null);
@@ -30,6 +64,7 @@ export default function Products() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
+      const q = searchParams.get('q') || '';
       const params: Record<string, unknown> = { page, size: 16 };
       if (filters.categoryId) params.categoryId = filters.categoryId;
       if (filters.brandId) params.brandId = filters.brandId;
@@ -38,14 +73,23 @@ export default function Products() {
       if (filters.minRating) params.minRating = filters.minRating;
 
       let res;
-      if (search) {
-        res = await productService.search(search, page, 16);
+      if (q) {
+        res = await productService.search(q, page, 16);
       } else if (Object.values(filters).some(Boolean)) {
         res = await productService.filter(params);
       } else {
         res = await productService.getAll(page, 16);
       }
-      setProducts(res.data);
+
+      if (res.data?.content) {
+        const mappedContent = res.data.content.map((p) => ({
+          ...p,
+          primaryImage: PRODUCT_IMAGE_MAP[p.name] || p.primaryImage,
+        }));
+        setProducts({ ...res.data, content: mappedContent });
+      }
+    } catch {
+      // Keep existing products or show empty
     } finally {
       setLoading(false);
     }
@@ -273,21 +317,25 @@ export default function Products() {
                 >
                   <ChevronLeft size={16} className="mx-auto" />
                 </motion.button>
-                {Array.from({ length: products.totalPages }, (_, i) => (
-                  <motion.button
-                    key={i}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => goToPage(i)}
-                    className={`w-10 h-10 rounded-xl font-display font-semibold transition-all ${
-                      i === page
-                        ? 'bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-lg shadow-brand-600/30'
-                        : 'bg-white dark:bg-dark-800 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'
-                    }`}
-                  >
-                    {i + 1}
-                  </motion.button>
-                ))}
+                {getPageWindow(page, products.totalPages).map((p, i) =>
+                  typeof p === 'string' ? (
+                    <span key={`${p}-${i}`} className="px-1 text-slate-400 select-none">…</span>
+                  ) : (
+                    <motion.button
+                      key={p}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => goToPage(p)}
+                      className={`w-10 h-10 rounded-xl font-display font-semibold transition-all ${
+                        p === page
+                          ? 'bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-lg shadow-brand-600/30'
+                          : 'bg-white dark:bg-dark-800 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'
+                      }`}
+                    >
+                      {p + 1}
+                    </motion.button>
+                  )
+                )}
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}

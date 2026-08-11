@@ -295,6 +295,9 @@ export default function Checkout() {
                 placeholder="Enter coupon code (e.g. SPORTX20)"
                 className="input-premium w-full bg-white dark:bg-slate-800 text-slate-900 dark:text-white border-slate-200 dark:border-slate-700 placeholder-slate-400 dark:placeholder-slate-500 font-medium"
               />
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium">
+                Coupon is validated and its discount is applied when you place the order.
+              </p>
             </div>
 
             {/* Notes */}
@@ -329,7 +332,10 @@ export default function Checkout() {
             <div className="flex justify-between mb-2 text-sm"><span className="text-slate-600 dark:text-slate-300 font-medium">Shipping</span><span className="font-bold text-slate-800 dark:text-slate-200">₹{shipping.toLocaleString('en-IN')}</span></div>
             <div className="flex justify-between mb-2 text-sm"><span className="text-slate-600 dark:text-slate-300 font-medium">Tax (18%)</span><span className="font-bold text-slate-800 dark:text-slate-200">₹{tax.toLocaleString('en-IN')}</span></div>
             {couponCode.trim() && (
-              <div className="flex justify-between mb-2 text-sm"><span className="text-slate-600 dark:text-slate-300 font-medium">Coupon</span><span className="font-bold text-emerald-600 dark:text-emerald-400">{couponCode.trim().toUpperCase()} · applied</span></div>
+              <div className="flex justify-between mb-2 text-sm">
+                <span className="text-slate-600 dark:text-slate-300 font-medium">Coupon</span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">{couponCode.trim().toUpperCase()}</span>
+              </div>
             )}
             <hr className="my-5 border-slate-200 dark:border-slate-800" />
             <div className="flex justify-between font-display font-extrabold text-xl mb-6">

@@ -97,21 +97,25 @@ export default function ManageCoupons() {
     <AdminLayout>
       <Toast message={toast} type={toastType} />
 
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 pb-4 border-b border-slate-200/80 dark:border-white/10">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-slate-900 flex items-center justify-center shadow-lg shadow-slate-900/10">
-            <TicketPercent size={20} className="text-white" />
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#ff6a00] to-amber-600 flex items-center justify-center shadow-md text-white shrink-0">
+            <TicketPercent size={20} />
           </div>
           <div>
-            <h1 className="font-display text-2xl font-extrabold text-slate-900">Manage Coupons</h1>
-            <p className="text-slate-500 text-sm">Create discount codes for your store</p>
+            <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Coupons</h1>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Create and manage promotional discount codes</p>
           </div>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl font-display font-bold text-sm uppercase tracking-wide transition-all ${showForm ? 'bg-white border-2 border-slate-200 text-slate-700 hover:bg-slate-50' : 'btn-accent shadow-lg'}`}
+          className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-display font-bold text-xs uppercase tracking-wider transition-all shrink-0 ${
+            showForm
+              ? 'bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 hover:bg-slate-50'
+              : 'bg-[#ff6a00] text-white hover:bg-[#ea580c] shadow-lg shadow-orange-500/25'
+          }`}
         >
-          {showForm ? 'Cancel' : <><Plus size={16} /> Add Coupon</>}
+          {showForm ? 'Cancel' : <><Plus size={15} /> Add Coupon</>}
         </button>
       </div>
 
@@ -120,9 +124,12 @@ export default function ManageCoupons() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           onSubmit={handleSubmit}
-          className="admin-card p-7 mb-8"
+          className="admin-card p-6 mb-8 border-2 border-[#ff6a00]/30"
         >
-          <h2 className="font-display text-lg font-extrabold text-slate-900 mb-5">New Coupon</h2>
+          <h2 className="font-display text-lg font-extrabold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
+            <TicketPercent size={18} className="text-[#ff6a00]" />
+            Create New Coupon
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className={labelClass}>Code</label>
@@ -142,28 +149,18 @@ export default function ManageCoupons() {
             </div>
             <div>
               <label className={labelClass}>Usage Limit</label>
-              <input type="number" value={form.usageLimit} onChange={(e) => setForm((p) => ({ ...p, usageLimit: e.target.value }))} className={inputClass} />
+              <input type="number" min="1" value={form.usageLimit} onChange={(e) => setForm((p) => ({ ...p, usageLimit: e.target.value }))} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>Valid From</label>
-              <input type="datetime-local" value={form.validFrom} onChange={(e) => setForm((p) => ({ ...p, validFrom: e.target.value }))} className={inputClass} />
-            </div>
-            <div>
-              <label className={labelClass}>Valid Until</label>
+              <label className={labelClass}>Expiry Date</label>
               <input type="datetime-local" value={form.validUntil} onChange={(e) => setForm((p) => ({ ...p, validUntil: e.target.value }))} className={inputClass} />
-            </div>
-            <div className="flex items-end pb-2">
-              <label className="flex items-center gap-2.5 text-sm font-semibold text-slate-700">
-                <input type="checkbox" checked={form.active} onChange={(e) => setForm((p) => ({ ...p, active: e.target.checked }))} className="w-4 h-4 accent-brand-600" />
-                Active
-              </label>
             </div>
           </div>
           <div className="flex gap-3 mt-6">
-            <button type="button" onClick={() => setShowForm(false)} className="flex-1 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-600 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+            <button type="button" onClick={() => setShowForm(false)} className="px-6 py-3 rounded-xl font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-white/10 hover:bg-slate-200">
               Cancel
             </button>
-            <button type="submit" disabled={saving} className={`flex-1 btn-accent px-6 py-3 rounded-2xl font-display font-semibold text-sm uppercase tracking-wide ${saving ? 'opacity-60 cursor-not-allowed' : ''}`}>
+            <button type="submit" disabled={saving} className={`bg-[#ff6a00] hover:bg-[#ea580c] text-white px-8 py-3 rounded-xl font-display font-bold text-sm uppercase tracking-wide shadow-lg shadow-orange-500/25 ${saving ? 'opacity-60 cursor-not-allowed' : ''}`}>
               {saving ? 'Creating...' : 'Create Coupon'}
             </button>
           </div>
@@ -191,33 +188,33 @@ export default function ManageCoupons() {
               </tr>
             )}
             {coupons.map((c) => (
-              <tr key={c.id} className="border-b border-slate-50 hover:bg-slate-50/70 transition-colors">
+              <tr key={c.id} className="border-b border-slate-50 dark:border-white/5 hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors">
                 <td>
-                  <span className="font-mono font-bold text-brand-600 bg-brand-50 border border-brand-100 dark:bg-white/10 dark:border-white/10 px-3 py-1 rounded-lg">{c.code}</span>
+                  <span className="font-mono font-bold text-[#ff6a00] bg-orange-50 border border-orange-200 dark:bg-orange-950/40 dark:border-orange-900/40 px-3 py-1 rounded-lg text-xs">{c.code}</span>
                 </td>
-                <td className="font-display font-bold text-slate-900">{c.discountPercent}%</td>
+                <td className="font-display font-extrabold text-slate-900 dark:text-white">{c.discountPercent}% OFF</td>
                 <td className="hidden sm:table-cell">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-20 h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-brand-500 to-accent-600 rounded-full" style={{ width: `${Math.min(100, (c.usedCount / (c.usageLimit || 1)) * 100)}%` }} />
+                    <div className="w-20 h-1.5 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
+                      <div className="h-full bg-[#ff6a00] rounded-full" style={{ width: `${Math.min(100, (c.usedCount / (c.usageLimit || 1)) * 100)}%` }} />
                     </div>
-                    <span className="text-sm text-slate-600 whitespace-nowrap">{c.usedCount}/{c.usageLimit}</span>
+                    <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 whitespace-nowrap">{c.usedCount}/{c.usageLimit}</span>
                   </div>
                 </td>
                 <td>
                   {c.active ? (
-                    <span className="admin-badge bg-emerald-100 text-emerald-700">
+                    <span className="admin-badge bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Active
                     </span>
                   ) : (
-                    <span className="admin-badge bg-red-100 text-red-700">
+                    <span className="admin-badge bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400">
                       <span className="w-1.5 h-1.5 rounded-full bg-red-500" /> Inactive
                     </span>
                   )}
                 </td>
                 <td className="admin-td-right">
                   <div className="flex items-center justify-end gap-1.5">
-                    <button onClick={() => setDeleteTarget(c)} className="admin-action text-red-500 hover:bg-red-50 hover:text-red-700 dark:hover:bg-white/10">
+                    <button onClick={() => setDeleteTarget(c)} className="admin-action text-red-500" title="Delete coupon">
                       <Trash2 size={13} /> Delete
                     </button>
                   </div>
