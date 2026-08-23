@@ -54,6 +54,16 @@ export default function Cart() {
     }, 300);
   };
 
+  const handleClearCart = async () => {
+    if (!window.confirm('Are you sure you want to clear all items from your cart?')) return;
+    try {
+      await cartService.clearCart();
+      setCart({ items: [], totalItems: 0, subtotal: 0 });
+    } catch {
+      alert('Failed to clear cart');
+    }
+  };
+
   const shipping = cart ? (cart.subtotal >= 500 ? 0 : 49) : 0;
   const total = cart ? cart.subtotal + shipping : 0;
 
@@ -85,11 +95,19 @@ export default function Cart() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-      <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="font-display text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-2">
-          Shopping <span className="text-gradient-brand">Cart</span>
-        </h1>
-        <p className="text-slate-500 dark:text-slate-400">{cart.items.length} item{cart.items.length > 1 ? 's' : ''} in your bag</p>
+      <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between gap-4">
+        <div>
+          <h1 className="font-display text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-2">
+            Shopping <span className="text-gradient-brand">Cart</span>
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400">{cart.items.length} item{cart.items.length > 1 ? 's' : ''} in your bag</p>
+        </div>
+        <button
+          onClick={handleClearCart}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-red-600 hover:text-red-700 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/40 transition-all hover:shadow-sm"
+        >
+          <Trash2 size={14} /> Clear Cart
+        </button>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-10">

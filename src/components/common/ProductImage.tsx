@@ -20,7 +20,7 @@ function normalizeUrl(src?: string | null): string | null {
   if (trimmed.startsWith('//')) return `https:${trimmed}`;
   if (trimmed.startsWith('/uploads/') || trimmed.startsWith('uploads/')) {
     const cleanPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
-    return `http://127.0.0.1:8080${cleanPath}`;
+    return cleanPath;
   }
   if (trimmed.startsWith('/')) return trimmed;
   return trimmed;
