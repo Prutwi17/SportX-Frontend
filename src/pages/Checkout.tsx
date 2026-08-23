@@ -5,7 +5,7 @@ import { MapPin, CreditCard, Ticket, StickyNote, ArrowRight, Wallet, Lock, Shiel
 import { addressService } from '../services/addressService';
 import { paymentService } from '../services/paymentService';
 import { cartService, notifyCartUpdated } from '../services/cartService';
-import type { Address, Cart, PaymentDTO } from '../types';
+import type { Address, Cart } from '../types';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import PaymentModal from '../components/common/PaymentModal';
 
@@ -27,9 +27,14 @@ export default function Checkout() {
   const [loading, setLoading] = useState(true);
   const [placing, setPlacing] = useState(false);
 
-  // Online Payment Modal state (fallback)
+  // Fallback Payment Modal State
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [paymentData, setPaymentData] = useState<PaymentDTO | null>(null);
+  const [modalPaymentData, setModalPaymentData] = useState<{
+    orderId: number;
+    orderNumber: string;
+    amount: number;
+    razorpayOrderId: string;
+  } | null>(null);
 
   const navigate = useNavigate();
 
@@ -62,8 +67,6 @@ export default function Checkout() {
       });
 
       const pData = createRes.data;
-      setPaymentData(pData);
-
       const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
 
       const completePayment = async (
@@ -85,21 +88,22 @@ export default function Checkout() {
           }
           setCart(null);
           notifyCartUpdated();
-          setShowPaymentModal(false);
           navigate(`/payment/success/${pData.orderId}`, { replace: true });
         } catch (err: unknown) {
           const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Payment verification failed';
-          setShowPaymentModal(false);
           navigate(`/payment/failure?reason=${encodeURIComponent(msg)}`);
         } finally {
           setPlacing(false);
+          setShowPaymentModal(false);
         }
       };
 
-      // 2. Open Official Razorpay Checkout Popup SDK
-      if (typeof window.Razorpay !== 'undefined') {
+      // 2. Open Official Razorpay Checkout Popup SDK if order was created on Razorpay server
+      const isSimulatedOrder = !pData.razorpayOrderId || !pData.razorpayOrderId.startsWith('order_');
+
+      if (typeof window.Razorpay !== 'undefined' && pData.keyId && pData.razorpayOrderId && !isSimulatedOrder) {
         const options = {
-          key: pData.keyId || 'rzp_test_TLLtJkMeN8kfBJ',
+          key: pData.keyId,
           amount: Math.round(pData.amount * 100),
           currency: pData.currency || 'INR',
           name: 'SportX',
@@ -126,54 +130,37 @@ export default function Checkout() {
         try {
           const rzp = new window.Razorpay(options);
           rzp.on('payment.failed', function () {
-            setPlacing(false);
+            // On SDK payment fail, fallback to interactive test modal
+            setModalPaymentData({
+              orderId: pData.orderId,
+              orderNumber: pData.orderNumber || '',
+              amount: pData.amount,
+              razorpayOrderId: pData.razorpayOrderId || '',
+            });
             setShowPaymentModal(true);
+            setPlacing(false);
           });
           rzp.open();
+          return;
         } catch {
-          setShowPaymentModal(true);
+          /* fallback to modal */
         }
-      } else {
-        setShowPaymentModal(true);
       }
+
+      // 3. Fallback: Interactive Payment Modal for local testing when credentials require refresh
+      setModalPaymentData({
+        orderId: pData.orderId,
+        orderNumber: pData.orderNumber || '',
+        amount: pData.amount,
+        razorpayOrderId: pData.razorpayOrderId || '',
+      });
+      setShowPaymentModal(true);
+      setPlacing(false);
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to initialize payment';
       alert(msg);
       setPlacing(false);
     }
-  };
-
-  const handlePaymentSuccess = async (razorpayPaymentId?: string, razorpayOrderId?: string, razorpaySignature?: string) => {
-    if (!paymentData) return;
-    try {
-      await paymentService.verifyPayment({
-        orderId: paymentData.orderId,
-        razorpayOrderId: razorpayOrderId || paymentData.razorpayOrderId,
-        razorpayPaymentId: razorpayPaymentId || `pay_${Date.now()}`,
-        razorpaySignature,
-      });
-      try {
-        await cartService.clearCart();
-      } catch {
-        /* backend may have already cleared the cart */
-      }
-      setCart(null);
-      notifyCartUpdated();
-      setShowPaymentModal(false);
-      navigate(`/payment/success/${paymentData.orderId}`, { replace: true });
-    } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Payment verification failed';
-      setShowPaymentModal(false);
-      navigate(`/payment/failure?reason=${encodeURIComponent(msg)}`);
-    } finally {
-      setPlacing(false);
-    }
-  };
-
-  const handlePaymentFailure = (reason: string) => {
-    setShowPaymentModal(false);
-    setPlacing(false);
-    navigate(`/payment/failure?reason=${encodeURIComponent(reason)}`);
   };
 
   if (loading) return <LoadingSpinner />;
@@ -363,14 +350,40 @@ export default function Checkout() {
         </div>
       </form>
 
-      {paymentData && (
+      {/* Fallback Interactive Test Payment Modal */}
+      {modalPaymentData && (
         <PaymentModal
           isOpen={showPaymentModal}
           onClose={() => setShowPaymentModal(false)}
-          amount={paymentData.amount}
-          orderNumber={paymentData.orderNumber || ''}
-          onSuccess={handlePaymentSuccess}
-          onFailure={handlePaymentFailure}
+          amount={modalPaymentData.amount}
+          orderNumber={modalPaymentData.orderNumber}
+          onSuccess={async (paymentId, signature) => {
+            try {
+              await paymentService.verifyPayment({
+                orderId: modalPaymentData.orderId,
+                razorpayOrderId: modalPaymentData.razorpayOrderId,
+                razorpayPaymentId: paymentId || `pay_${Date.now()}`,
+                razorpaySignature: signature,
+              });
+              try {
+                await cartService.clearCart();
+              } catch {
+                /* cart may already be deleted */
+              }
+              setCart(null);
+              notifyCartUpdated();
+              navigate(`/payment/success/${modalPaymentData.orderId}`, { replace: true });
+            } catch (err: unknown) {
+              const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Payment verification failed';
+              navigate(`/payment/failure?reason=${encodeURIComponent(msg)}`);
+            } finally {
+              setShowPaymentModal(false);
+            }
+          }}
+          onFailure={(reason) => {
+            setShowPaymentModal(false);
+            navigate(`/payment/failure?reason=${encodeURIComponent(reason)}`);
+          }}
         />
       )}
     </div>
