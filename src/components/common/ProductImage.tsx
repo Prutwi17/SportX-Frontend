@@ -20,7 +20,10 @@ function normalizeUrl(src?: string | null): string | null {
   if (trimmed.startsWith('//')) return `https:${trimmed}`;
   if (trimmed.startsWith('/uploads/') || trimmed.startsWith('uploads/')) {
     const cleanPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
-    return cleanPath;
+    const apiBase = import.meta.env.VITE_API_BASE_URL
+      ? import.meta.env.VITE_API_BASE_URL.replace(/\/$/, '')
+      : '';
+    return `${apiBase}${cleanPath}`;
   }
   if (trimmed.startsWith('/')) return trimmed;
   return trimmed;
