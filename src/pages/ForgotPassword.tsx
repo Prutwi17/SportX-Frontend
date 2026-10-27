@@ -1,10 +1,11 @@
-import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect, type FormEvent } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, KeyRound, Eye, EyeOff, ArrowRight, ArrowLeft, CheckCircle2, Zap } from 'lucide-react';
 import { authService } from '../services/authService';
 
 export default function ForgotPassword() {
+  const [searchParams] = useSearchParams();
   const [step, setStep] = useState<'request' | 'reset' | 'done'>('request');
   const [email, setEmail] = useState('');
   const [resetToken, setResetToken] = useState('');
@@ -16,6 +17,14 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const tokenFromUrl = searchParams.get('token');
+    if (tokenFromUrl) {
+      setResetToken(tokenFromUrl);
+      setStep('reset');
+    }
+  }, [searchParams]);
+
   const handleRequest = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
@@ -23,10 +32,9 @@ export default function ForgotPassword() {
     setLoading(true);
     try {
       const res = await authService.forgotPassword(email);
-      setMessage(res.data.message);
+      setMessage(res.data.message || 'If an account exists for that email, a password reset link has been processed.');
       if (res.data.token) {
         setResetToken(res.data.token);
-        setStep('reset');
       }
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
@@ -39,6 +47,10 @@ export default function ForgotPassword() {
   const handleReset = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+    if (!resetToken.trim()) {
+      setError('Please provide a valid password reset token');
+      return;
+    }
     if (newPassword.length < 6) {
       setError('Password must be at least 6 characters');
       return;
@@ -49,11 +61,11 @@ export default function ForgotPassword() {
     }
     setLoading(true);
     try {
-      await authService.resetPassword(resetToken, newPassword);
+      await authService.resetPassword(resetToken.trim(), newPassword);
       setStep('done');
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(msg || 'Reset failed. Please try again.');
+      setError(msg || 'Reset failed. Please verify your token and try again.');
     } finally {
       setLoading(false);
     }
@@ -116,15 +128,23 @@ export default function ForgotPassword() {
                 {!loading && <ArrowRight size={17} />}
               </button>
             </form>
+
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={() => setStep('reset')}
+                className="text-xs text-brand-600 hover:text-brand-700 font-semibold underline"
+              >
+                Already have a reset token? Enter it here
+              </button>
+            </div>
           </>
         )}
 
         {step === 'reset' && (
           <>
             <h2 className="font-display text-2xl font-extrabold text-slate-900">Set a New Password</h2>
-            <p className="text-slate-500 mt-2">
-              {message} For this demo, the reset link is shown below.
-            </p>
+            <p className="text-slate-500 mt-2">Enter your reset token and new password.</p>
 
             {error && (
               <div className="mt-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-2xl text-sm">
@@ -132,12 +152,19 @@ export default function ForgotPassword() {
               </div>
             )}
 
-            <div className="mt-6 bg-brand-50 border border-brand-100 rounded-2xl px-4 py-3">
-              <p className="text-xs font-semibold text-brand-700 mb-1">Your reset token</p>
-              <p className="font-mono text-xs text-brand-800 break-all">{resetToken}</p>
-            </div>
-
             <form onSubmit={handleReset} className="space-y-5 mt-6">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Reset Token</label>
+                <input
+                  type="text"
+                  value={resetToken}
+                  onChange={(e) => setResetToken(e.target.value)}
+                  className="input-premium w-full font-mono text-sm"
+                  placeholder="Paste your reset token"
+                  required
+                />
+              </div>
+
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">New Password</label>
                 <div className="relative group">
@@ -178,6 +205,16 @@ export default function ForgotPassword() {
                 {!loading && <ArrowRight size={17} />}
               </button>
             </form>
+
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={() => setStep('request')}
+                className="text-xs text-slate-500 hover:text-slate-700 font-semibold"
+              >
+                Back to email request
+              </button>
+            </div>
           </>
         )}
 

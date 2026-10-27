@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, ExternalLink, ChevronDown, PackageSearch, Trash2 } from 'lucide-react';
 import { orderService } from '../../services/orderService';
@@ -39,15 +39,15 @@ export default function ManageOrders() {
     window.setTimeout(() => setToast(''), 2600);
   };
 
-  const fetchOrders = () => {
+  const fetchOrders = useCallback(() => {
     setLoading(true);
     orderService.getAllOrders(page, 15).then((res) => {
       setOrders(res.data);
       setLoading(false);
     }).catch(() => setLoading(false));
-  };
+  }, [page]);
 
-  useEffect(() => { fetchOrders(); }, [page]);
+  useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
   const handleStatusUpdate = async (orderId: number, status: string) => {
     const previous = orders?.content.find((o) => o.id === orderId)?.status;

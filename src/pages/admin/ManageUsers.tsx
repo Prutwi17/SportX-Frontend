@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import {
   Users,
   Search,
@@ -68,7 +68,7 @@ export default function ManageUsers() {
     window.setTimeout(() => setToast(''), 2600);
   };
 
-  const fetchUsers = () => {
+  const fetchUsers = useCallback(() => {
     setLoading(true);
     adminUserService
       .getUsers({
@@ -83,11 +83,11 @@ export default function ManageUsers() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  };
+  }, [page, viewMode, searchTerm, roleFilter, enabledFilter]);
 
   useEffect(() => {
     fetchUsers();
-  }, [page, searchTerm, roleFilter, enabledFilter, viewMode]);
+  }, [fetchUsers]);
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();

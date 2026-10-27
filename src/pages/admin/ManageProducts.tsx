@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import {
@@ -93,7 +93,7 @@ export default function ManageProducts() {
     });
   };
 
-  const fetchProducts = () => {
+  const fetchProducts = useCallback(() => {
     setLoading(true);
     productService
       .adminList({
@@ -110,20 +110,22 @@ export default function ManageProducts() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  };
+  }, [page, viewMode, appliedKeyword, categoryFilter, brandFilter, stockFilter]);
 
   useEffect(() => {
     fetchProducts();
+  }, [fetchProducts]);
+
+  useEffect(() => {
     categoryService.getAll().then((res) => setCategories(res.data));
     brandService.getAll().then((res) => setBrands(res.data));
-  }, [page, appliedKeyword, categoryFilter, brandFilter, stockFilter, viewMode]);
+  }, []);
 
   useEffect(() => {
     const q = searchParams.get('q') || '';
     setKeyword(q);
     setAppliedKeyword(q);
     setPage(0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const handleSearch = (e: FormEvent) => {
